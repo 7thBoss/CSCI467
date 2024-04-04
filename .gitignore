@@ -1,6 +1,6 @@
 #Ignore file 
 
 *.json
-*.sqlite
+*.sqlite*
 *.wsuo
 *.vsidx
