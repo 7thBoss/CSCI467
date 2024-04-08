@@ -11,6 +11,6 @@ CREATE TABLE order_parts (
   FOREIGN KEY (order_id) REFERENCES orders(order_id)));
 
 CREATE TABLE warehouses ( 
-  warehouse_id INT(64) NOT NULL, 
+  warehouse_id INT(64) NOT NULL AUTO_INCREMENT, 
   part_num INT(64) NOT NULL, 
   quantity INT(64), PRIMARY KEY (warehouse_id, part_num));
