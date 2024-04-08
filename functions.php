@@ -38,19 +38,15 @@
 		}
 	}
 	
-	/*	Creates connection to the database and queries it
-	 *	$query represents an SQL Query. Only SELECT statements should be used
-	 */
-	function sql_select($query)
+	//Establish connection to database
+	function connection()
 	{
 		try
 		{
-			//Establish connection to database
 			$dsn = "mysql:host=courses;dbname=z1977114";
 			$pdo = new PDO($dsn, "z1977114", "2001Jul07");
-		
-			//Return JSON object
-			return $pdo->query($query);
+			
+			return $pdo;
 		}
 		
 		//Catch database errors
@@ -60,27 +56,23 @@
 		}
 	}
 	
-	/*	Creates connection to the database and queries it
+	/*	Handles SELECT statements for database
+	 *	$query represents an SQL Query. Only SELECT statements should be used
+	 */
+	function sql_select($query)
+	{
+			//Return selected object
+			return connection()->query($query);
+	}
+	
+	/*	Handles INSERT statements for database
 	 *	$query represents an SQL Query. Only INSERT statements should be used
 	 *	$data represents an array of values to insert
 	 */
 	function sql_insert($query, $data)
 	{
-		try
-		{
-			//Establish connection to database
-			$dsn = "mysql:host=courses;dbname=z1977114";
-			$pdo = new PDO($dsn, "z1977114", "2001Jul07");
-		
 			//Prepare and execute insert command
-			$prepared = $pdo->prepare($query);
+			$prepared = connection()->prepare($query);
 			$prepared->execute($data);
-		}
-		
-		//Catch database errors
-		catch(PDOexception $e)
-		{
-			echo "Connection to database failed: " . $e->getMessage();
-		}
 	}
 ?>
