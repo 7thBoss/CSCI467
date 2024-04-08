@@ -5,7 +5,7 @@ CREATE TABLE orders (
 
 CREATE TABLE order_parts ( 
   part_num INT(64) NOT NULL,
-  order_id INT(64) NOT NULL AUTO_INCREMENT,
+  order_id INT(64) NOT NULL,
   quantity INT(64) NOT NULL,
   PRIMARY KEY (part_num)
   FOREIGN KEY (order_id) REFERENCES orders(order_id));
