@@ -43,7 +43,7 @@
 	{
 		try
 		{
-			$dsn = "mysql:host=courses;dbname=z1977114";
+			$dsn = "mysql:host=courses;port=3306;dbname=z1977114";
 			$pdo = new PDO($dsn, "z1977114", "2001Jul07");
 			
 			return $pdo;
@@ -58,17 +58,14 @@
 	
 	/*	Handles SELECT statements for database
 	 *	$query represents an SQL Query. Only SELECT statements should be used
+	 *	$data represents an array of values to search by
 	 */
-	function sql_select($query)
+	function sql_select($query, $data = [])
 	{
 			//Return selected object
-			return connection()->query($query);
-			
-			/*
 			$select = connection()->prepare($query);
-			$select->execute();
-			return $select->fetchAll(PDO::FETCH_OBJ);
-			/**/
+			$select->execute($data);
+			return $select->fetchAll();
 	}
 	
 	/*	Handles INSERT statements for database
@@ -80,5 +77,16 @@
 			//Prepare and execute insert command
 			$insert = connection()->prepare($query);
 			$insert->execute($data);
+	}
+	
+	/*	Handles UPDATE statements for database
+	 *	$query represents an SQL Query. Only UPDATE statements should be used
+	 *	$data represents an array of values to search and update
+	 */
+	function sql_update($query, $data)
+	{
+			//Update entry
+			$update = connection()->prepare($query);
+			$update->execute($data);
 	}
 ?>
