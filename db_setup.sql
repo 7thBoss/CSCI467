@@ -1,7 +1,7 @@
 CREATE TABLE orders ( 
     order_id INT(8) NOT NULL AUTO_INCREMENT,
     customer_id INT(32) NOT NULL,
-    order_status VARCHAR(7) NOT NULL,
+    order_status VARCHAR(8) NOT NULL,
     PRIMARY KEY (order_id)
 );
 

@@ -1,9 +1,18 @@
 <?php
-	//include functions.php
+	include "functions.php";
 	
+	//sql_insert("INSERT INTO orders (customer_id, order_status) VALUES(?, ?)", array(1, "Selected"));
 	
+	$requests = sql_select("SELECT * FROM orders");
 	
-	//Pack creditcard information
+	foreach($results as $result)
+	{
+		echo $result["order_id"]."<br>";
+	}
+	
+	//." ".$result["customer_id"]." ".$result["order_status"]
+	
+	/*/Pack creditcard information
 	$data = array(
 		'vendor' => 'VE001-99',
 		'trans' => '907-987654321-296',
@@ -26,4 +35,5 @@
 	$result = file_get_contents('http://blitz.cs.niu.edu/CreditCard/', false, $context);
 	
 	echo($result);
+	/**/
 ?>
