@@ -3,14 +3,22 @@
 	
 	//sql_insert("INSERT INTO orders (customer_id, order_status) VALUES(?, ?)", array(1, "Selected"));
 	
+	echo "Hello<br>";
+	
+	/*
+	$dsn = "mysql:host=courses;dbname=z1977114";
+	$pdo = new PDO($dsn, "z1977114", "2001Jul07");
+	$results = $pdo->query("SELECT * FROM orders");
+	/**/
+	
 	$requests = sql_select("SELECT * FROM orders");
 	
 	foreach($results as $result)
 	{
-		echo $result["order_id"]."<br>";
+		echo $result["order_id"]." ".$result["customer_id"]." ".$result["order_status"]."<br>";
 	}
 	
-	//." ".$result["customer_id"]." ".$result["order_status"]
+	echo "Hello Again";
 	
 	/*/Pack creditcard information
 	$data = array(

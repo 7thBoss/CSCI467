@@ -63,6 +63,12 @@
 	{
 			//Return selected object
 			return connection()->query($query);
+			
+			/*
+			$select = connection()->prepare($query);
+			$select->execute();
+			return $select->fetchAll(PDO::FETCH_OBJ);
+			/**/
 	}
 	
 	/*	Handles INSERT statements for database
@@ -72,7 +78,7 @@
 	function sql_insert($query, $data)
 	{
 			//Prepare and execute insert command
-			$prepared = connection()->prepare($query);
-			$prepared->execute($data);
+			$insert = connection()->prepare($query);
+			$insert->execute($data);
 	}
 ?>
