@@ -5,6 +5,15 @@
 	ini_set('log_errors', '0');
 	ini_set('error_log', './');
 	/**/
+	
+	//Start session
+	session_start();
+
+	//User field for sql and directory calls
+	$_SESSION["user"] = "z1977114";
+	
+	//Test Customer, NOT FINAL!
+	$_SESSION["customer_id"] = 1;
 
 	/*	Sends an email as auto.system.mailer.
 	 *	$to represents the email of the reciever
@@ -21,12 +30,21 @@
 	 */
 	function legacy_sql_query($query)
 	{
+		//Establish connection to legacy database
 		try
 		{
-			//Establish connection to legacy database
-			$dsn = "mysql:host=blitz.cs.niu.edu;port=3306;dbname=csci467";
-			$pdo = new PDO($dsn, "student", "student");
-		
+			//If the PDO has already been generated, use it
+			if (isset($_SESSION["legacyPDO"]))
+				$pdo = $_SESSION["legacyPDO"];
+			
+			//Otherwise, make a new PDO
+			else
+			{
+				$dsn = "mysql:host=blitz.cs.niu.edu;port=3306;dbname=csci467";
+				$pdo = new PDO($dsn, "student", "student");
+				$_SESSION["legacyPDO"] = $pdo;
+			}
+
 			//Return JSON object
 			return $pdo->query($query);
 		}
@@ -41,10 +59,20 @@
 	//Establish connection to database
 	function connection()
 	{
+		//Establish connection to database
 		try
 		{
-			$dsn = "mysql:host=courses;port=3306;dbname=z1977114";
-			$pdo = new PDO($dsn, "z1977114", "2001Jul07");
+			//If the PDO has already been generated, use it
+			if (isset($_SESSION["PDO"]))
+				$pdo = $_SESSION["PDO"];
+			
+			//Otherwise, make a new PDO
+			else
+			{
+				$dsn = "mysql:host=courses;port=3306;dbname=".$_SESSION["user"];
+				$pdo = new PDO($dsn, $_SESSION["user"], "2001Jul07");
+				$_SESSION["PDO"] = $pdo;
+			}
 			
 			return $pdo;
 		}
@@ -70,7 +98,7 @@
 	
 	/*	Handles INSERT statements for database
 	 *	$query represents an SQL Query. Only INSERT statements should be used
-	 *	$data represents an array of values to insert
+	 *	$data represents an array of values to insert, not optional
 	 */
 	function sql_insert($query, $data)
 	{
@@ -81,7 +109,7 @@
 	
 	/*	Handles UPDATE statements for database
 	 *	$query represents an SQL Query. Only UPDATE statements should be used
-	 *	$data represents an array of values to search and update
+	 *	$data represents an array of values to search and update, not optional
 	 */
 	function sql_update($query, $data)
 	{
