@@ -1,49 +1,14 @@
 <?php
 	include "functions.php";
-	
-	//Test insert
-	sql_insert("INSERT INTO orders (customer_id, order_status) VALUES(?, ?)", array(1, "Selected"));
 
-
-	//Test select
-	$results = sql_select("SELECT * FROM orders");
-	
-	foreach($results as $result)
-	{
-		echo $result["order_id"]." ".$result["customer_id"]." ".$result["order_status"]."<br>";
-	}
-	
-	echo "<br>";
-	
-	
-	//Test select with parameters
-	$results = sql_select("SELECT * FROM orders WHERE order_id = ? AND order_status = ?", [1, "Selected"]);
-	
-	foreach($results as $result)
-	{
-		echo $result["order_id"]." ".$result["customer_id"]." ".$result["order_status"]."<br>";
-	}
-	
-	echo "<br>";
-	
-	
-	//Test update
-	sql_update("UPDATE orders SET order_status = ? WHERE order_id = ?", ["Paid", 1]);
-	$results = sql_select("SELECT * FROM orders");
-	
-	foreach($results as $result)
-	{
-		echo $result["order_id"]." ".$result["customer_id"]." ".$result["order_status"]."<br>";
-	}
-	
-	/*/Pack creditcard information
+	//Pack creditcard information
 	$data = array(
 		'vendor' => 'VE001-99',
 		'trans' => '907-987654321-296',
-		'cc' => '6011 1234 4321 1234',
-		'name' => 'Jane Doe', 
+		'cc' =>  $_POST['cc'],
+		'name' => $_POST['name'], 
 		'exp' => '12/2024', 
-		'amount' => '654.32');
+		'amount' => $_POST['price']);
 
 	//Encode creditcard information
 	$options = array(
@@ -56,8 +21,25 @@
 
 	//Test creditcard
 	$context  = stream_context_create($options);
-	$result = file_get_contents('http://blitz.cs.niu.edu/CreditCard/', false, $context);
+	$result = json_decode(file_get_contents('http://blitz.cs.niu.edu/CreditCard/', false, $context), true);
 	
-	echo($result);
-	/**/
+	print_r($result);
+	
+	//If errors occured, inform the user
+	if(array_key_exists('errors', $result))
+	{
+		echo "Sorry, your transaction failed.<br>Reason: ".$result["errors"][0];
+	}
+	
+	//Otherwise, continue with transaction
+	else
+	{
+		echo "Success";
+		
+		//Update the status of the order
+		sql_update("UPDATE orders SET order_status='Paid' WHERE customer_id=? AND order_status='Selected'", [$_SESSION["customer_id"]]);
+		
+		//Send email to client
+		send_email($_POST["email"], "Transaction Complete", "Thank you for your purchace, your package will be arriving soon");
+	}
 ?>
