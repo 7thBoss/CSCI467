@@ -23,7 +23,7 @@
 	$context  = stream_context_create($options);
 	$result = json_decode(file_get_contents('http://blitz.cs.niu.edu/CreditCard/', false, $context), true);
 	
-	print_r($result);
+	//print_r($result);
 	
 	//If errors occured, inform the user
 	if(array_key_exists('errors', $result))
