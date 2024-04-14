@@ -29,7 +29,7 @@
 					<td><img src='".$part["pictureURL"]."'></td>
 					<td>
 						<form action='https://students.cs.niu.edu/~".$_SESSION["user"]."/CSCI467/add_to_cart.php' method='POST'>
-							<input type='hidden' name='part_num' value='".$result["number"]."'>
+							<input type='hidden' name='part_num' value='".$part["number"]."'>
 							<input type='submit' value='Add to Cart'>
 							<input type='number' name='quantity' step='1'>
 						</form>

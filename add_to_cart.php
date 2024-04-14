@@ -10,7 +10,9 @@
 		sql_insert("INSERT INTO orders (customer_id, order_status) VALUES(?, 'Selected')", [$_SESSION["customer_id"]]);
 		$order_id = sql_select("SELECT order_id FROM orders WHERE customer_id=? AND order_status='Selected'", [$_SESSION["customer_id"]]);
 	}
-	
+
+	print_r($_POST);
+
 	//Add part to order
 	if ($_POST["quantity"] == "") $_POST["quantity"] = 1;
 	

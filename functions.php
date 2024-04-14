@@ -13,7 +13,7 @@
 	$_SESSION["user"] = "z1977114";
 	
 	//Test Customer, NOT FINAL!
-	$_SESSION["customer_id"] = 1;
+	$_SESSION["customer_id"] = 6;
 
 	/*	Sends an email as auto.system.mailer.
 	 *	$to represents the email of the reciever
