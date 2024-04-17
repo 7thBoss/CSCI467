@@ -1,4 +1,6 @@
 <?php
+	session_start();
+
 	include "functions.php";
 
 	//Pack creditcard information
