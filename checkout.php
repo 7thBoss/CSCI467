@@ -1,8 +1,13 @@
 <?php
+	session_start();
+	
 	include "functions.php";
 	
+	//Get shipping and handling charge
+	$shipping_and_handling = 1.00;
+	
 	//Get a list of parts in the cart 
-	$order_id = sql_select("SELECT order_id FROM orders WHERE customer_id=? AND order_status='Selected'", [$_SESSION["customer_id"]])[0]['order_id'];
+	$order_id = get_order_id($_POST["customer"]);
 	$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$order_id]);
 	
 	//Get list of parts to search through
@@ -29,21 +34,39 @@
 		$item_price = $match['price'] * $order_part["quantity"];
 		$total_price += $item_price;
 		
+		//Print item
 		echo "<tr>
 				<td>".$match['description']."</td>
 				<td>".$order_part["quantity"]."</td>
 				<td>".$item_weight."</td>
 				<td>".$item_price."</td>
+				<td><form action='".$url."/remove_from_cart.php' method='POST'>
+					<input type='hidden' name='customer' value='".$_POST["customer"]."'>
+					<input type='hidden' name='part_num' value='".$match["number"]."'>
+					<input type='submit' value='Remove Item'>
+					<input type='number' min=1 max=".$order_part["quantity"]." name='quantity' step=1>
+				</form></td>
 			  </tr>";
 	}
+	
+	//Add shipping and handling to total price
+	$total_price += $total_weight * $shipping_and_handling;
+	
+	//Print s&h and Total prices
 	echo "<tr>
+			<td>Shippnig and Handling:</td>
+			<td></td>
+			<td></td>
+			<td>".$total_weight * $shipping_and_handling."</td>
+		  </tr>
+		  <tr>
 			<td>Total:</td>
 			<td></td>
 			<td>".$total_weight."</td>
 			<td>".$total_price."</td>
 		  </tr>
 		</table>
-	<form action='https://students.cs.niu.edu/~".$_SESSION['user']."/CSCI467/finalize_order.php' method='POST'>
+	<form action='".$url."/finalize_order.php' method='POST'>
 		<label for='name'>Name:</label><br>
 		<input type='text' name='name' id='name' placeholder='Jane Doe' required><br>
 		
@@ -61,8 +84,8 @@
 		
 		<input type='submit' value='Checkout'>
 	</form>
-	<form action='https://students.cs.niu.edu/~".$_SESSION['user']."/CSCI467/browse_catalog.php' method='POST'>
+	<form action='".$url."/browse_catalog.php' method='POST'>
+		<input type='hidden' name='customer' value='".$_POST["customer"]."'>
 		<input type='submit' value='Back to Catalog'>
 	</form>";
 ?>
-
