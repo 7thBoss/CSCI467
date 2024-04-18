@@ -1,6 +1,4 @@
 <?php
-	session_start();
-	
 	include "functions.php";
 	
 	//Get shipping and handling charge
@@ -81,6 +79,7 @@
 		
 		<input type='hidden' name='weight' value=".$total_weight.">
 		<input type='hidden' name='price' value=".$total_price.">
+		<input type='hidden' name='customer' value='".$_POST["customer"]."'>
 		
 		<input type='submit' value='Checkout'>
 	</form>

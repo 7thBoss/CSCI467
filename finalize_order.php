@@ -1,6 +1,4 @@
 <?php
-	session_start();
-
 	include "functions.php";
 
 	//Pack creditcard information
@@ -36,12 +34,20 @@
 	//Otherwise, continue with transaction
 	else
 	{
-		echo "Success";
+		//Get a list of parts in the cart 
+		$order_id = get_order_id($_POST["customer"]);
+		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$order_id]);
+		
+		//Update quantity of parts in warehouse
+		foreach($order_parts as $order_part)
+			sql_update("UPDATE warehouse_parts SET quantity = quantity-? WHERE part_num=?", [$order_part["quantity"], $order_part["part_num"]]);
 		
 		//Update the status of the order
-		sql_update("UPDATE orders SET order_status='Paid' WHERE customer_id=? AND order_status='Selected'", [$_SESSION["customer_id"]]);
+		sql_update("UPDATE orders SET order_status='Paid' WHERE order_id=?", [$order_id]);
 		
 		//Send email to client
-		send_email($_POST["email"], "Transaction Complete", "Thank you for your purchace, your package will be arriving soon");
+		//send_email($_POST["email"], "Transaction Complete", "Thank you for your purchace, your package will be arriving soon");
+		
+		echo "Success";
 	}
 ?>
