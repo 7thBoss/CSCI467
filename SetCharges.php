@@ -1,5 +1,7 @@
 <!DOCTYPE html>
 <html><head><title>Shipping Charges</title></head>
+<body style="background-color:powderblue;">
+
 <?php
 include 'functions.php';
 ?>

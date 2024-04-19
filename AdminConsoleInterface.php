@@ -16,7 +16,7 @@ try {
     $dateMax = "2060-01-01";
     $priceMin = 0;
     $priceMax = 999999.99;
-    
+
     if( isset($_GET["filter"]) ) {
         if($_GET["status"] == "incart") {
             $status = "InCart";
