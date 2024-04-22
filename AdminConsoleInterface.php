@@ -151,7 +151,7 @@ try {
 
     # Customer Table calling Function to draw table
     // echo "<h2>Customers in the Database</h2>";
-    // $rs = $pdo->query("SELECT * FROM customer;");
+    // $rs = $pdo->query("SELECT * FROM customers;");
     // $rowsCustomer = $rs->fetchAll(PDO::FETCH_ASSOC);
     // draw_table($rowsCustomer);
 
