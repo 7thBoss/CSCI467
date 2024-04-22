@@ -50,8 +50,20 @@
 		sql_update("UPDATE orders SET order_status='Paid' WHERE order_id=?", [$order_id]);
 		
 		//Send email to client
-		//send_email($_POST["email"], "Transaction Complete", "Thank you for your purchace, your package will be arriving soon");
+		send_email($_POST["email"], "Transaction Complete", "Thank you for your purchace, your package will be arriving soon");
 		
 		echo "Success";
 	}
+	
+	//Return to catalog
+	echo "<form action='".$url."/browse_catalog.php' method='POST' id='complete'>
+			<input type='hidden' name='customer' value='".$_POST["customer"]."'>
+		  </form>";
+		 
 ?>
+<script type="text/javascript">
+	setTimeout(function ()
+	{
+		document.getElementById('complete').submit();
+	}, 3000);
+</script>

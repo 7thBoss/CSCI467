@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-		<title>467 Project</title>
+		<title>Catalog</title>
 		<meta charset="UTF-8"/>
 		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<style>
@@ -37,6 +37,10 @@
 				padding: 0;
 				background-attachment: fixed;
 				background-image: linear-gradient(-50deg, green, limegreen); 
+			}
+			h1
+			{
+				padding-left:40px;
 			}
 		</style>
 		<header>
