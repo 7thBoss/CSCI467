@@ -10,9 +10,9 @@ include 'functions.php';
 try {
     $pdo = connection();
 
-    // default filter values (nothing gets filtered out0
+    // default filter values (nothing gets filtered out)
     $status = "%";
-    $dateMin = "1965-01-01";
+    $dateMin = "1960-01-01";
     $dateMax = "2060-01-01";
     $priceMin = 0;
     $priceMax = 999999.99;
@@ -73,7 +73,7 @@ try {
         }
 
         echo "<h3>Customer Information</h3>";
-        $rs = $pdo->prepare("SELECT * FROM customer WHERE customer_id = :customer_id");
+        $rs = legacy_sql_query("SELECT * FROM customers WHERE id = :customer_id");
         $rs->execute(array(":customer_id" => $customerId));
         $customer = $rs->fetchAll(PDO::FETCH_ASSOC);
         if(!empty($customer)) {
@@ -83,7 +83,6 @@ try {
             echo "<p> No results found</p>";
         }
     
-        echo '</div>';
         return;
     }
 
@@ -151,7 +150,7 @@ try {
 
     # Customer Table calling Function to draw table
     // echo "<h2>Customers in the Database</h2>";
-    // $rs = $pdo->query("SELECT * FROM customer;");
+    // $rs = $pdo->query("SELECT * FROM customers;");
     // $rowsCustomer = $rs->fetchAll(PDO::FETCH_ASSOC);
     // draw_table($rowsCustomer);
 
