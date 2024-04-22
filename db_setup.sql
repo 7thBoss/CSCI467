@@ -35,16 +35,4 @@ CREATE TABLE shipping_cost (
 	PRIMARY KEY	(bracket_id)
 );
 
-CREATE TABLE customer (
-	customer_id INT NOT NULL AUTO_INCREMENT,
-	first_name VARCHAR(30),
-	last_name VARCHAR(30),
-	email VARCHAR(30),
-	street_addr VARCHAR(30),
-	city_addr VARCHAR(30),
-	state_addr VARCHAR(30),
-	zip_addr VARCHAR(30),
-
-	PRIMARY KEY (customer_id)
-);
 	
