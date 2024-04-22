@@ -83,7 +83,6 @@ try {
             echo "<p> No results found</p>";
         }
     
-        echo '</div>';
         return;
     }
 
