@@ -128,4 +128,17 @@
 	{
 		return sql_select("SELECT order_id FROM orders WHERE customer_id=? AND order_status='Selected'", [$customer])[0][0];
 	}
+	
+	/*	Returns the shipping and handling cost by the weight of a given order
+	 *	$weight represents total weight of the order
+	 */
+	function get_shipping_cost_by_weight($weight)
+	{
+		$price = sql_select("SELECT price FROM shipping_cost WHERE ? > min_weight AND ? < max_weight", [$weight, $weight]);
+		
+		if ($price)
+			return $price[0][0];
+		else
+			return 1.00;
+	}
 ?>

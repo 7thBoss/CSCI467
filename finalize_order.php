@@ -1,12 +1,16 @@
 <?php
 	include "functions.php";
 
+	$customer = legacy_sql_query("SELECT * FROM customers WHERE id = ?", [$_POST["customer"]]);
+
 	//Pack creditcard information
 	$data = array(
-		'vendor' => 'VE001-99',
-		'trans' => '907-987654321-296',
+		'vendor' => uniqid(),
+		'trans' => uniqid(),
+		//'vendor' => 'VE001-99',
+		//'trans' => '907-987654321-296',
 		'cc' =>  $_POST['cc'],
-		'name' => $_POST['name'], 
+		'name' => $customer["name"], 
 		'exp' => '12/2024', 
 		'amount' => $_POST['price']);
 
