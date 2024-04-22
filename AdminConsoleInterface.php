@@ -73,7 +73,7 @@ try {
         }
 
         echo "<h3>Customer Information</h3>";
-        $rs = legacy_sql_query("SELECT * FROM customers WHERE id = :customer_id");
+        $rs = $pdo->prepare("SELECT * FROM customers WHERE id = :customer_id");
         $rs->execute(array(":customer_id" => $customerId));
         $customer = $rs->fetchAll(PDO::FETCH_ASSOC);
         if(!empty($customer)) {
