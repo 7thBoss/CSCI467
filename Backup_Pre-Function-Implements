@@ -23,40 +23,36 @@ function drawTable($arrayOfArrays) {
 
 try { // if something goes wrong, an exception is thrown
     
-    // connect to legacyDB
-    $dsn_spock = "mysql:host=courses;dbname=z1944667";
-    $pdo_spock = new PDO($dsn_spock, "z1944667", "1999Nov09");
+    //$dsn_spock = "mysql:host=courses;dbname=z1944667";
+    //$pdo = new PDO($dsn_spock, "z1944667", "1999Nov09");
+
+    // connect to spockDB
+    $pdo = connection();
 
     // connect to legacyDB
     $dsn_legacy = "mysql:host=blitz.cs.niu.edu;port=3306;dbname=csci467";
-    $pdo_legacy = new PDO($dsn_legacy, "student", "student");
-
+    $legacy_pdo = new PDO($dsn_legacy, "student", "student");
 
     // Print invoice generically
     // Only 1 order's invoice is printed at a time therefore, the "complete order" button
     // will produce only 1 set of details that correspond to that order.
     
     // order_id based on "complete order"
-    $order_id = 2;
+    $order_id = 1;
 
-
-    
+/*
     // SQL to extract part_num and quantity based on order_id
     $sql_current_order = "SELECT * FROM order_parts
                           WHERE order_id = '$order_id';";
 
     // Store details in $current_order as array for processing
-    $rs_current_order = $pdo_spock->prepare($sql_current_order);
+    $rs_current_order = $pdo->prepare($sql_current_order);
     $rs_current_order->execute(); 
     $currentOrder = $rs_current_order->fetchAll(PDO::FETCH_ASSOC);
+*/
+    $currentOrder = sql_select("SELECT * FROM order_parts WHERE order_id = ?;", [$order_id]);
     
-    // Test
-    // drawTable($currentOrder);
-    
-
-
-
-
+    print_r($current_order);
     //*************************
     // Invoice Label
     //**************************
@@ -74,15 +70,18 @@ try { // if something goes wrong, an exception is thrown
 
         // Store part number in $part_num
         $part_num = $row["part_num"]; //echo "$part_num <br/>";
-                
+/*                
         // SQL using $part_num to get part name, price, and weight from parts table
         $sql_current_part = "SELECT description,price,weight FROM parts
                              WHERE number = '$part_num';";
 
         // $currentPart holds the part name, price, and weight the current part_num from legacy
-        $rs_current_part = $pdo_legacy->prepare($sql_current_part);
+        $rs_current_part = $legacy_pdo->prepare($sql_current_part);
         $rs_current_part->execute(); 
         $currentPart = $rs_current_part->fetch(PDO::FETCH_ASSOC);
+*/
+        legacy_sql_query("SELECT description,price,weight FROM parts WHERE number = ?;", [$part_num]);
+
         //print_r($currentPart);
 
         // 2. part name printed
@@ -120,7 +119,7 @@ try { // if something goes wrong, an exception is thrown
                              AND order_status = 'Picked';";
 
     // Store details in $currentCustomerSpock as array for processing
-    $rs_current_customer = $pdo_spock->prepare($sql_current_customer);
+    $rs_current_customer = $pdo->prepare($sql_current_customer);
     $rs_current_customer->execute(); 
     $currentCustomerSpock = $rs_current_customer->fetch(PDO::FETCH_ASSOC);
     //print_r($currentCustomer);
@@ -133,7 +132,7 @@ try { // if something goes wrong, an exception is thrown
                           WHERE id = '$customerID';";
 
     // $currentCustomerLegacy holds the part name, price, and weight the current part_num from legacy
-    $rs_customer_info = $pdo_legacy->prepare($sql_customer_info);
+    $rs_customer_info = $legacy_pdo->prepare($sql_customer_info);
     $rs_customer_info->execute(); 
     $currentCustomerLegacy = $rs_customer_info->fetch(PDO::FETCH_ASSOC);
     //print_r($currentCustomerLegacy);
@@ -175,7 +174,7 @@ try { // if something goes wrong, an exception is thrown
                            WHERE order_id = $order_id;";
 
       // Execute SQL
-      $rs_order_status = $pdo_spock->prepare($sql_order_status);
+      $rs_order_status = $pdo->prepare($sql_order_status);
       $rs_order_status->execute();    
       
       foreach ($currentOrder as $row) {
@@ -188,7 +187,7 @@ try { // if something goes wrong, an exception is thrown
                                 WHERE part_num = $part_num;";
 
         // Execute SQL
-        $rs_update_quantity = $pdo_spock->prepare($sql_update_quantity);
+        $rs_update_quantity = $pdo->prepare($sql_update_quantity);
         $rs_update_quantity->execute();                           
      }
     }
