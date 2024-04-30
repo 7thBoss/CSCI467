@@ -7,8 +7,7 @@ CREATE TABLE orders (
     weight_total FLOAT(6,2),
     price_total  FLOAT(8,2),
 	
-    PRIMARY KEY (order_id)
-    FOREIGN KEY (customer_id) REFERENCES customer(customer_id)	
+    PRIMARY KEY (order_id)	
 );
 
 CREATE TABLE order_parts ( 
