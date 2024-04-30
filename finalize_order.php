@@ -50,7 +50,7 @@
 		sql_update("UPDATE orders SET order_status='Paid' WHERE order_id=?", [$order_id]);
 		
 		//Send email to client
-		send_email($_POST["email"], "Transaction Complete", "Thank you for your purchace, your package will be arriving soon");
+		send_email($_POST["email"], "Transaction Complete", "Thank you for your purchase. We're processing your order and it will arrive soon");
 		
 		echo "Success";
 	}
