@@ -7,11 +7,9 @@
 	$data = array(
 		'vendor' => uniqid(),
 		'trans' => uniqid(),
-		//'vendor' => 'VE001-99',
-		//'trans' => '907-987654321-296',
 		'cc' =>  $_POST['cc'],
-		'name' => $customer["name"], 
-		'exp' => '12/2024', 
+		'name' => $_POST["name"], 
+		'exp' => $_POST["exp"], 
 		'amount' => $_POST['price']);
 
 	//Encode creditcard information
@@ -31,9 +29,7 @@
 	
 	//If errors occured, inform the user
 	if(array_key_exists('errors', $result))
-	{
 		echo "Sorry, your transaction failed.<br>Reason: ".$result["errors"][0];
-	}
 	
 	//Otherwise, continue with transaction
 	else

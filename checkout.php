@@ -132,6 +132,13 @@
 				
 					<tr>
 						<td>
+							<label for='email'>Name:</label><br>
+							<input type='text' name='name' id='name' placeholder='John Doe' required><br>
+						</td>
+					</tr>
+				
+					<tr>
+						<td>
 							<label for='email'>Email:</label><br>
 							<input type='email' name='email' id='email' placeholder='example@mail.com' required><br>
 						</td>
@@ -141,6 +148,7 @@
 						<td>
 							<label for='cc'>Credit Card:</label><br>
 							<input type='text' name='cc' id='cc' placeholder='1234 5678 1234 5678' required><br>
+							<input type='text' name='exp' id='exp' placeholder='12/2024' required><br>
 						</td>
 					</tr>
 			
