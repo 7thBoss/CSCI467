@@ -9,7 +9,7 @@
 	//User field for sql and directory calls
 	$user = "z1977114";
 	
-	//Url field for 
+	//Url field for the main directory
 	$url = "https://students.cs.niu.edu/~".$user."/CSCI467";
 
 	/*	Sends an email as auto.system.mailer.
@@ -19,7 +19,29 @@
 	 */
 	function send_email($to, $subject, $message)
 	{
-		mail($to, $subject, $message, "From: auto.system.mailer@gmail.com");
+		//Get parameters and prepare them
+		$data = ['to' => $to, 'subject' => $subject, 'html' => $message];
+		
+		$curl = curl_init();
+
+		//Send email
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => 'https://api.mailgun.net/v3/sandbox0d6f068e979b45f3848e5ca327631ff1.mailgun.org/messages?from=auto.system.mailer%40gmail.com&'.http_build_query($data),
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => '',
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => 'POST',
+			CURLOPT_HTTPHEADER => array(
+				'Authorization: Basic YXBpOmMwMDczZGJhNWI1ZWY0Y2E1YzlmNzE0NzkzMDEyNjc4LTg2MjIwZTZhLWEyNmI5YTlj'
+			),
+		));
+
+		curl_exec($curl);
+
+		curl_close($curl);
 	}
 
 	/*	Creates connection to legacy database and queries database
@@ -117,8 +139,8 @@
 	 */
 	function sql_delete($query, $data)
 	{
-			$update = connection()->prepare($query);
-			$update->execute($data);
+			$delete = connection()->prepare($query);
+			$delete->execute($data);
 	}
 	
 	/*	Returns current order_id from given customer
