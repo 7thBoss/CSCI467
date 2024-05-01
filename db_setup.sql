@@ -2,10 +2,6 @@ CREATE TABLE orders (
     order_id INT(8) NOT NULL AUTO_INCREMENT,
     customer_id INT(32) NOT NULL,
     order_status VARCHAR(10),
-    filled_date DATETIME,
-    ordered_date DATETIME,
-    weight_total FLOAT(6,2),
-    price_total  FLOAT(8,2),
 	
     PRIMARY KEY (order_id)	
 );
