@@ -2,10 +2,32 @@
 <html>
 <title>Group 2A: Admin Console Interface</title>
 <body style="background-color:powderblue;">
-<body><?php
+<?php
 session_start();
 include 'functions.php';
 
+function draw_table($rows) {
+    echo "<table border=1 cellspacing=1>";
+    echo "<tr>";
+    if($rows!= null && $rows[0]!=null) {
+        foreach($rows[0] as $key => $item)
+        {
+            echo "<th>$key</th>";
+        }
+        echo "</tr>";
+
+        foreach($rows as $row){
+            echo "<tr>";
+            foreach($row as $key => $item){
+                echo "<td>$item</td>";
+            }
+            echo"</tr>";
+        } 
+    } else {
+        echo "NO DATA";
+    }
+    echo "</table>";
+}
 
 try {
     $pdo = connection();
@@ -18,14 +40,14 @@ try {
     $priceMax = 999999.99;
 
     if( isset($_GET["filter"]) ) {
-        if($_GET["status"] == "incart") {
-            $status = "InCart";
+        if($_GET["status"] == "selected") {
+            $status = "Selected";
         }
-        if($_GET["status"] == "authorized") {
-            $status = "Authorized";
+        if($_GET["status"] == "paid") {
+            $status = "Paid";
         }
-        else if($_GET["status"] == "completed") {
-            $status = "Completed";
+        else if($_GET["status"] == "shipped") {
+            $status = "Shipped";
         }
 
         if(!empty($_GET["dateMin"])) {
@@ -73,15 +95,44 @@ try {
         }
 
         echo "<h3>Customer Information</h3>";
-        $rs = $pdo->prepare("SELECT * FROM customers WHERE id = :customer_id");
-        $rs->execute(array(":customer_id" => $customerId));
-        $customer = $rs->fetchAll(PDO::FETCH_ASSOC);
-        if(!empty($customer)) {
-            draw_table($customer);
-        }
-        else {
-            echo "<p> No results found</p>";
-        }
+        $customerInfo = legacy_sql_query("SELECT * FROM customers WHERE id = $customerId");
+        //$rs->execute(array(":customer_id" => $customerId));
+        //$customer = $rs->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo "<table border=3>";
+          echo "<tr>";
+            echo "<th>id</th>";
+            echo "<th>name</th>";
+            echo "<th>city</th>";
+            echo "<th>street</th>";
+            echo "<th>contact</th";
+          echo "</tr>";
+
+          echo "<tr>";
+            foreach($customerInfo as $cust)
+            {
+              echo "<td>";
+                echo "$cust[id]";
+              echo "</td>";
+
+              echo "<td>";
+                echo "$cust[name]";
+              echo "</td>";
+
+              echo "<td>";
+                echo "$cust[city]";
+              echo "</td>";
+
+              echo "<td>";
+                echo "$cust[street]";
+              echo "</td>";
+
+              echo "<td>";
+                echo "$cust[contact]";
+              echo "</td>";
+            }
+           echo "</tr>";
+         echo "</table>";
     
         return;
     }
@@ -95,9 +146,9 @@ try {
     <label for="status">Status</label>
     <select name="status">
     <option value="any">Any</option>
-    <option value="incart">InCart</option>
-    <option value="authorized">Authorized</option>
-    <option value="completed">Completed</option>
+    <option value="selected">Selected</option>
+    <option value="paid">Paid</option>
+    <option value="shipped">Shipped</option>
     </select> <br/>
     <label for="dateMin">Date Range</label>
     <input type="date" name="dateMin"/> - 
@@ -112,12 +163,12 @@ try {
 
     // display orders using filters (if any)
     echo "<h2> Orders </h2>";
-    $sql = "SELECT * FROM orders WHERE order_status LIKE :status " .
-        "AND ordered_date >= :dateMin AND ordered_date <= :dateMax " .
-        "AND price_total >= :priceMin AND price_total <= :priceMax;";
+    $sql = "SELECT * FROM orders WHERE order_status LIKE :status ";
+        //"AND ordered_date >= :dateMin AND ordered_date <= :dateMax " .
+        //"AND price_total >= :priceMin AND price_total <= :priceMax;";
     $rs = $pdo->prepare($sql);
     // execute query using either filter values from $_GET or defaults
-    $rs->execute(array(":status" => $status, ":dateMin" => $dateMin, ":dateMax" => $dateMax, ":priceMin" => $priceMin, ":priceMax" => $priceMax));
+    $rs->execute(array(":status" => $status)); //":dateMin" => $dateMin, ":dateMax" => $dateMax, ":priceMin" => $priceMin, ":priceMax" => $priceMax));
     $rowsOrders = $rs->fetchAll(PDO::FETCH_ASSOC);
 
     if(!empty($rowsOrders)) {
@@ -163,5 +214,4 @@ catch(PDOexception $e) {
 }
 ?>
 
-</body>
 </html>
