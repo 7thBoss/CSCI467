@@ -56,9 +56,6 @@
 		//Get a list of parts in the cart 
 		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$_POST["order_id"]]);
 	
-		//Get list of parts to search through
-		$parts = legacy_sql_query("SELECT * FROM parts");
-	
 		//Get totals
 		$total_price = total_price($_POST["order_id"]);
 		$total_weight = total_weight($_POST["order_id"]);
@@ -68,9 +65,7 @@
 		foreach($order_parts as $order_part)
 		{	
 			//Search the legacy database for the matchining part
-			foreach($parts as $part)
-				if ($part['number'] == $order_part["part_num"])
-					$match = $part;
+			$match = legacy_sql_query("SELECT * FROM parts WHERE number = ?", [$order_part["part_num"]])[0];
 		
 			//Print item
 			echo "<tr>
