@@ -1,44 +1,44 @@
 <!DOCTYPE HTML>
 <html>
-<head>
-   <meta charset="UTF-8">
+   <head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order's Page</title>
+    <title>Order Table</title>
     <style>
-        /* General page style */
+        /* General page styles */
         body {
-            font-family: Arial, sans-serif; // font for the whole page
-            background-color: #f4f4f9; // Light grey background
-            color: #333; // Dark grey text
-            padding: 20px; // Adds some padding around the content
+            font-family: Arial, sans-serif; /* Sets a clean, modern font for the whole page */
+            background-color: #f4f4f9; /* Light grey background for better contrast */
+            color: #333; /* Dark grey text for readability */
+            padding: 20px; /* Adds some padding around the content */
         }
 
         h2 {
             color: #444;
-            margin-bottom: 20px; // Space below the heading
+            margin-bottom: 20px; /* Space below the heading */
         }
 
         /* Table styles */
         table {
-            width: 100%; // Full width tables
-            border-collapse: collapse; // Ensures borders between cells are merged
-            margin-bottom: 20px; // Space below the table
+            width: 100%; /* Full width tables */
+            border-collapse: collapse; /* Ensures borders between cells are merged */
+            margin-bottom: 20px; /* Space below the table */
         }
 
         th, td {
-            border: 1px solid #ccc; // Light grey border for table cells 
-            text-align: left; // Aligns text to the left
-            padding: 8px; // Padding inside cells 
-            font-size: 16px; // Slightly larger font size to read easier
+            border: 1px solid #ccc; /* Light grey border for table cells */
+            text-align: left; /* Aligns text to the left */
+            padding: 8px; /* Padding inside cells */
+            font-size: 16px; /* Slightly larger font size for readability */
         }
 
         th {
-            background-color: #e9e9f0; // Light grey background for headers
-            color: #333; // Dark text for contrast
+            background-color: #e9e9f0; /* Light purple background for headers */
+            color: #333; /* Dark text for contrast */
         }
 
         tr:nth-child(even) {
-            background-color: #f8f8fa; // Zebra striping for rows (thought it looked nice)
+            background-color: #f8f8fa; /* Zebra striping for rows */
         }
 
         /* Button and input styles */
@@ -46,13 +46,13 @@
             padding: 8px;
             margin-top: 5px;
             margin-right: 10px;
-             border: 1px solid #ccc;
-            border-radius: 4px; // Rounded corners for inputs and selects
-            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px; /* Rounded corners for inputs and selects */
+            box-sizing: border-box; /*  Includes padding */
         }
 
-        input[type="submit"] {
-            background-color: #4CAF50; // Green background for submit button
+            input[type="submit"] {
+            background-color: #4CAF50; /* Green background for submit button */
             color: white;
             padding: 10px 20px;
             border: none;
@@ -61,8 +61,9 @@
         }
 
         input[type="submit"]:hover {
-            background-color: #45a049; // Darker green on hover
+            background-color: #45a049; /* Darker green on hover */
         }
+
     </style>
 </head>
     
