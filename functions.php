@@ -117,7 +117,7 @@
 	 *	$query represents an SQL Query. Only INSERT statements should be used
 	 *	$data represents an array of values to insert, not optional
 	 */
-	function sql_insert($query, $data)
+	function sql_insert($query, $data = [])
 	{
 			$insert = connection()->prepare($query);
 			$insert->execute($data);
@@ -141,14 +141,6 @@
 	{
 			$delete = connection()->prepare($query);
 			$delete->execute($data);
-	}
-	
-	/*	Returns current order_id from given customer
-	 *	$customer represents the customer_id of the given customer
-	 */
-	function get_order_id($customer)
-	{
-		return sql_select("SELECT order_id FROM orders WHERE customer_id=? AND order_status='Selected'", [$customer])[0][0];
 	}
 	
 	/*	Returns the shipping and handling cost by the weight of a given order

@@ -53,12 +53,8 @@
 	<?php
 		include "functions.php";
 	
-		//Get shipping and handling charge
-		$shipping_and_handling = 1.00;
-	
 		//Get a list of parts in the cart 
-		$order_id = get_order_id($_POST["customer"]);
-		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$order_id]);
+		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$_POST["order_id"]]);
 	
 		//Get list of parts to search through
 		$parts = legacy_sql_query("SELECT * FROM parts");
@@ -89,10 +85,10 @@
 					<td>".$match['description']."</td>
 					<td><img src='".$match["pictureURL"]."'></td>
 					<td>".$order_part["quantity"]."</td>
-					<td>".$item_weight."</td>
-					<td>".$item_price."</td>
+					<td>".$item_weight." lbs</td>
+					<td>$".$item_price."</td>
 					<td><form action='".$url."/remove_from_cart.php' method='POST'>
-						<input type='hidden' name='customer' value='".$_POST["customer"]."'>
+						<input type='hidden' name='order_id' value='".$_POST["order_id"]."'>
 						<input type='hidden' name='part_num' value='".$match["number"]."'>
 						<input type='number' min=1 max=".$order_part["quantity"]." name='quantity' step=1>
 						<input type='submit' value='Remove Item'>
@@ -111,16 +107,16 @@
 				<td>Shipping and Handling:</td>
 				<td></td>
 				<td></td>
-				<td>".$shipping_and_handling."</td>
 				<td></td>
+				<td>$".number_format((float)$shipping_and_handling, 2, '.', '')."</td>
 				<td></td>
 			</tr>
 			<tr>
 				<td>Total:</td>
 				<td></td>
-				<td>".$total_weight."</td>
-				<td>".$total_price."</td>
 				<td></td>
+				<td>".$total_weight." lbs</td>
+				<td>$".$total_price."</td>
 				<td></td>
 			</tr>
 			</table>
@@ -128,11 +124,11 @@
 				<form action='".$url."/finalize_order.php' method='POST'>
 					<input type='hidden' name='weight' value=".$total_weight.">
 					<input type='hidden' name='price' value=".$total_price.">
-					<input type='hidden' name='customer' value='".$_POST["customer"]."'>
+					<input type='hidden' name='order_id' value='".$_POST["order_id"]."'>
 				
 					<tr>
 						<td>
-							<label for='email'>Name:</label><br>
+							<label for='name'>Name:</label><br>
 							<input type='text' name='name' id='name' placeholder='John Doe' required><br>
 						</td>
 					</tr>
@@ -141,6 +137,13 @@
 						<td>
 							<label for='email'>Email:</label><br>
 							<input type='email' name='email' id='email' placeholder='example@mail.com' required><br>
+						</td>
+					</tr>
+					
+					<tr>
+						<td>
+							<label for='address'>Address:</label><br>
+							<input type='text' name='address' id='address' placeholder='123 Example Street' required><br>
 						</td>
 					</tr>
 	
@@ -156,7 +159,7 @@
 				</form>
 				<tr><td>
 					<form action='".$url."/browse_catalog.php' method='POST'>
-						<input type='hidden' name='customer' value='".$_POST["customer"]."'>
+						<input type='hidden' name='order_id' value='".$_POST["order_id"]."'>
 						<input type='submit' value='Back to Catalog'>
 					</form>
 				</td></tr>

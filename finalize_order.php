@@ -1,7 +1,8 @@
 <?php
 	include "functions.php";
 
-	$customer = legacy_sql_query("SELECT * FROM customers WHERE id = ?", [$_POST["customer"]]);
+	//By default, return to the catalog
+	$return = "<form action='".$url."/browse_catalog.php' method='POST' id='complete'></form>";
 
 	//Pack creditcard information
 	$data = array(
@@ -25,25 +26,30 @@
 	$context  = stream_context_create($options);
 	$result = json_decode(file_get_contents('http://blitz.cs.niu.edu/CreditCard/', false, $context), true);
 	
-	//print_r($result);
-	
 	//If errors occured, inform the user
 	if(array_key_exists('errors', $result))
+	{
+		//Print error
 		echo "Sorry, your transaction failed.<br>Reason: ".$result["errors"][0];
+		
+		//Return to the checkout instead
+		$return = "<form action='".$url."/checkout.php' method='POST' id='complete'>
+					  <input type='hidden' name='order_id' value='".$_POST["order_id"]."'>
+				   </form>";
+	}
 	
 	//Otherwise, continue with transaction
 	else
 	{
 		//Get a list of parts in the cart 
-		$order_id = get_order_id($_POST["customer"]);
-		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$order_id]);
+		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$_POST["order_id"]]);
 		
 		//Update quantity of parts in warehouse
 		foreach($order_parts as $order_part)
 			sql_update("UPDATE warehouse_parts SET quantity = quantity-? WHERE part_num=?", [$order_part["quantity"], $order_part["part_num"]]);
 		
 		//Update the status of the order
-		sql_update("UPDATE orders SET order_status='Paid' WHERE order_id=?", [$order_id]);
+		sql_update("UPDATE orders SET order_status='Paid', order_date=?, customer_name=?, email=?, address=? WHERE order_id=?", [date("Y-m-d H:i:s"), $_POST["name"], $_POST["email"], $_POST["address"], $_POST["order_id"]]);
 		
 		//Send email to client
 		send_email($_POST["email"], "Transaction Complete", "Thank you for your purchase. We're processing your order and it will arrive soon");
@@ -52,9 +58,7 @@
 	}
 	
 	//Return to catalog
-	echo "<form action='".$url."/browse_catalog.php' method='POST' id='complete'>
-			<input type='hidden' name='customer' value='".$_POST["customer"]."'>
-		  </form>";
+	echo $return;
 		 
 ?>
 <script type="text/javascript">
