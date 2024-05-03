@@ -59,9 +59,9 @@
 		//Get list of parts to search through
 		$parts = legacy_sql_query("SELECT * FROM parts");
 	
-		//Initialize totals
-		$total_price = 0;
-		$total_weight = 0;
+		//Get totals
+		$total_price = total_price($_POST["order_id"]);
+		$total_weight = total_weight($_POST["order_id"]);
 	
 		//List all parts in cart
 		echo "<table><tr><th>Name</th><th></th><th>Quantity</th><th>Weight</th><th>Price</th></tr>";
@@ -72,21 +72,13 @@
 				if ($part['number'] == $order_part["part_num"])
 					$match = $part;
 		
-			//Get the weight of the item at quantity and add to total
-			$item_weight = $match['weight'] * $order_part["quantity"];
-			$total_weight += $item_weight;
-		
-			//Get the price of the item at quantity and add to total
-			$item_price = $match['price'] * $order_part["quantity"];
-			$total_price += $item_price;
-		
 			//Print item
 			echo "<tr>
 					<td>".$match['description']."</td>
 					<td><img src='".$match["pictureURL"]."'></td>
 					<td>".$order_part["quantity"]."</td>
-					<td>".$item_weight." lbs</td>
-					<td>$".$item_price."</td>
+					<td>".$match["weight"] * $order_part["quantity"]." lbs</td>
+					<td>$".$match["price"] * $order_part["quantity"]."</td>
 					<td><form action='".$url."/remove_from_cart.php' method='POST'>
 						<input type='hidden' name='order_id' value='".$_POST["order_id"]."'>
 						<input type='hidden' name='part_num' value='".$match["number"]."'>

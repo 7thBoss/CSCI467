@@ -155,4 +155,40 @@
 		else
 			return 1.00;
 	}
+	
+	/*	Returns the total price of a given order
+	 *	$order_id represents the order_id of a given order
+	 */
+	function total_price($order_id)
+	{
+		//Initialize total price
+		$total_price = 0;
+		
+		//Get a list of parts in the cart 
+		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$order_id]);
+		
+		//Search the legacy database for the matchining part
+		foreach($order_parts as $order_part)
+			$total_price += legacy_sql_query("SELECT price FROM parts WHERE number=?", [$order_part["part_num"]])[0][0] * $order_part["quantity"];
+				
+		return $total_price;
+	}
+	
+	/*	Returns the total weight of a given order
+	 *	$order_id represents the order_id of a given order
+	 */
+	function total_weight($order_id)
+	{
+		//Initialize total weight
+		$total_weight = 0;
+		
+		//Get a list of parts in the cart 
+		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$order_id]);
+		
+		//Search the legacy database for the matchining part
+		foreach($order_parts as $order_part)
+			$total_weight += legacy_sql_query("SELECT weight FROM parts WHERE number=?", [$order_part["part_num"]])[0][0] * $order_part["quantity"];
+				
+		return $total_weight;
+	}
 ?>
