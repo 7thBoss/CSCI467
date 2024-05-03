@@ -90,12 +90,14 @@
       </style>
 
       <header>
-      <h1>Invoice and Shipping</h1>
+      <h1>Print Invoice and Shipping Label</h1>
       </header>
 
     </head>
   <body>
 <?php
+
+session_start();
 
 include "functions.php";
 
@@ -105,26 +107,26 @@ include "functions.php";
     // connect to spockDB
     $pdo = connection();
 
-    // $_POST["order_id"] produces order to print invoice and shipping label.
+    // From Print Packing List, selected order_num is passed for corresponding invoice and shipping label
     $order_id = $_POST["order_num"];
 
     // Get current order details from order_parts
     $currentOrder = sql_select("SELECT * FROM order_parts WHERE order_id = ?;", [$order_id]);
     
-    //*************************
+    //**************************
     // Invoice Label
     //**************************
     echo "<h4>Invoice: </h4>";
-    
     echo "<table>";
-    echo '<th>';
-    echo 'Quantity';
-    echo '</th>';
-  
+
     echo '<th>';
     echo 'Description';
     echo '</th>';
-  
+
+    echo '<th>';
+    echo 'Quantity';
+    echo '</th>';
+
     echo '<th>';
     echo 'Price';
     echo '</th>';
@@ -133,10 +135,6 @@ include "functions.php";
     foreach($currentOrder as $row){
 
         echo "<tr>";
-
-          // 1. Print part quantity
-          $qty = $row["quantity"];
-            echo"<td>$qty</td>";
 
           // Store part number in $part_num
           $part_num = $row["part_num"]; 
@@ -147,11 +145,15 @@ include "functions.php";
           // 2. part name printed
           $part_name = $currentPart[0]["description"];
           echo "<td>$part_name</td>";
-        
+
+          // 1. Print part quantity
+          $qty = $row["quantity"];
+          echo"<td>$qty</td>";
+
           // 3. part price printed
           $part_price = $currentPart[0]["price"];
           $part_price *= $qty;
-          echo "<td>$$part_price<td>" ;
+          echo "<td>$$part_price<td>";
         
         echo "<tr>";
         
@@ -171,7 +173,7 @@ include "functions.php";
       // 4. total amount, total weight, shipping cost, and invoice total printed
       echo "<table>";
       
-      echo "<tr><td>Total Amount</td> <td>$$amount </td></tr>";
+      echo "<tr><td>Total Amount</td>      <td>$$amount </td></tr>";
       echo "<tr><td>Total Weight</td>      <td>$order_weight lbs</td></tr>";
       echo "<tr><td>Shipping Cost</td>     <td> $$shippingCost</td></tr>";
       echo "<tr><td>Invoice Total</td>     <td> $$invoice_total</td></tr>";
@@ -184,47 +186,32 @@ include "functions.php";
     echo "<h4>Shipping: </h4>";
 
     $currentCustomerSpock = sql_select("SELECT * FROM orders WHERE order_id = ? AND order_status = 'Paid';",  [$order_id]);
-    //print_r($currentCustomerSpock);
-    $customerID = $currentCustomerSpock[0]["customer_id"];
+    // print_r($currentCustomerSpock);
 
-    $currentCustomerLegacy = legacy_sql_query("SELECT name,city,street,contact FROM customers WHERE id = ?;", [$customerID]);
-    //print_r($currentCustomerLegacy);
+    $name = $currentCustomerSpock[0]["customer_name"];
+    $address = $currentCustomerSpock[0]["address"];
+    $email = $currentCustomerSpock[0]["email"];
 
-    $name = $currentCustomerLegacy[0]["name"];
-    $city = $currentCustomerLegacy[0]["city"];
-    $street  = $currentCustomerLegacy[0]["street"];
-    $contact = $currentCustomerLegacy[0]["contact"];
+    // echo $name . $address . $email;
 
-    echo "$name <br/> $street, $city <br/> order confirmation sent to: $contact <br/><br/>";
-    
-    // Send email confirmation
-    send_email("yudish.sheth09@gmail.com", "Order $order_id: Confirmation", "All items in your order is packed and shipped to $street, $city");             
+    echo "$name <br/> $address <br/> Click to:<br/><br/>";
 
-    // Check if form is submitted
-    if (isset($_POST['order_num'])) {
-
-      // Handles UPDATE statements using SQL to update a fulfilled order's status
-      sql_update("UPDATE orders SET order_status='Shipped' WHERE order_id = ?;", [$order_id]);
-      
-      // Get rid of this since Cam changes it.
-      // foreach ($currentOrder as $row) {
-      //   $part_num = $row["part_num"];
-      //   $qtyToReduce = $row["quantity"];
-
-      //   sql_update("UPDATE warehouse_parts SET onhand=onhand-? WHERE part_num = ?;", [$qtyToReduce, $part_num]);
-      // }
-    }
+    // Store session variables
+    $_SESSION["order_id"] = $_POST["order_num"];
+    $_SESSION["name"]     = $name;
+    $_SESSION["address"]  = $address;
+    $_SESSION["contact"]  = $email;
 
     //***************************************************
-    // Order shipped. Update onhand inventory and status.
+    // To shipment confirmation page.
     //***************************************************
-    echo "<form action='$url/packinglist.php' method='POST'>";
+    echo "<form action='$url/ship_order.php' method='POST'>";
 
-    echo "Order will be marked as Shipped. ";
-    // Note: Would be cool if this button connected to a printer and printed the label.
-    echo '<input type=submit name="Fulfilled" value="Return To Orders"/>';
+    echo '<input type=submit name="Fulfilled" value="Confirm Shipment"/>';
 
     echo "<form/>";
+
+
 
 ?>
 
