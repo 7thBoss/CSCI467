@@ -1,323 +1,305 @@
 <!DOCTYPE html>
 <html>
 
-<?php
+	<head>
+		<title>Packing List</title>
+		<meta charset='UTF-8'/>
+		<meta name='viewport' content='width=device-width, initial-scale=1'>
+		<style>
+			header
+			{
+				padding: 1px;
+				width: 100%;
+				background-color: white;
+			}
+			table
+			{
+				
+				background-color: white;
+				border-collapse: collapse;
+			}
+			th
+			{
+				text-align: center;
+				height: 40px;
+				width: 120px;
+			}
+			td
+			{
+			    text-align: center;
+				padding:10px;
+				border: 2px solid black;
+			}
+			body
+			{
+				margin: 0;
+				padding: 0;
+				background-attachment: fixed;
+				background-image: linear-gradient(-50deg, lightblue, lightblue); 
+			}
+			h1
+			{
+				padding-left:40px;
+			}
+			h2
+			{
+				padding-left:30px
+			}
+			p
+			{
+				padding-left:40px;
+			}
+			form
+			{
+				padding-left:40px;
+			}
+		</style>
+		<header>
+			<h1>Packing List</h1>
+		</header>
+    </head>
+	<?php
 
-echo '<p> This will print out the packing list </p>';
+		//include "format.php";
 
-//include 'DB_Access.php';
-include 'functions.php';
+		//echo '<p> This will print out the packing list </p>';
+
+		//include 'DB_Access.php';
+		include 'functions.php';
 
 
-// Add in ability to see list of orders avalible 
-//and select a different one to be shown insted of oldest
 
-//Checking if order number has been passed to mark as Packed
-if(gettype($_POST['order_num']) != gettype($empty))
-{
-	//echo '<p>0</p>';
-	//echo $_POST['order_num'];
-	//Checking that order status is Paid as to not overwrite status from other actions
-	/*$status = sql_select('SELECT order_status FROM orders WHERE order_id = ?',[$_POST['order_num']]);
-	//echo ' exe'
-	
-	
-	//echo '<p>1</p>';
+		//Refresh button to recheck for order
+		//echo 'Refresh Page:  ';
+		echo '<form>';
+		echo 'Refresh Page:  ';
+		echo '<input type="submit" value="Refresh">';
+		echo '</form>';
 
-	if ($status[0]['order_status'] == 'Paid')  
-	//if not Paid, nothing happens as it is likly a refresh of the page that resubmited the order id
-	{
-		//$select_parts = $DB->prepare('SELECT part_num, quantity FROM order_parts WHERE order_id = ?');
-		//$select_parts->execute([$_POST['order_num']]);
+		echo '<br>';
 
-		$part = sql_select('SELECT part_num, quantity FROM order_parts WHERE order_id = ?',[$_POST['order_num']]);
-		//= $select_parts->fetchAll();
-		//echo '<p>2</p>';
-		$part_ctr = 0;
-		
-		while(gettype($part[$part_ctr]['part_num']) != gettype($empty))
+
+
+		//finding orders needing to be picked, order by assecending order_id
+
+		$order = sql_select('SELECT order_id FROM orders WHERE order_status = "Paid" ORDER BY order_id ASC',[]);
+
+		if (gettype($order[0][0]) == gettype($empty))
 		{
-			//$inventory = $DB->prepare('SELECT onhand FROM warehouse_parts WHERE part_num = ?');
-			//$inventory->execute([$part[$part_ctr]['part_num']]);
+			// if no orders have the status Paid
+			echo "<h1>No orders avaible, please try again</h1>";
+		}
+		else 
+		{
 
-			//echo '<p>3</p>';
+			//establising what order's packing list is being desplayed'
+			if (gettype($_POST['order_num']) != gettype($empty)) //if number is passed, though submitting selection for different order or pageing though avaible orders
+			{
+				$order_num = $_POST['order_num'];
+			}
+			else // if no order number is passed, Select oldest order
+			{
+				$order_num = $order[0][0];
+			}
 
-			$quanity = sql_select('SELECT onhand FROM warehouse_parts WHERE part_num = ?',[$part[$part_ctr]['part_num']]);
-			//= $inventory->fetchAll();
+			// Getting number of Orders avable to be Picked
+			$total = 0;
+			while (gettype($order[$total]['order_id']) != gettype($empty))
+			{
+				$total = $total + 1;
+			}
+
+			echo '<h2>Orders Available to be Packed:  ';
+			echo $total;
+
+			echo ' </br>';
+
+			echo 'Select Order Number to See Packing List</h2>';
+			echo '<p>Default Order is Oldest Order with Paid Status</p>';
+
+			$end = FALSE;
+
+			// Setting counter to 0 if no counter value is passed
+			if(gettype($_POST['counter']) != gettype($empty))
+			{
+				$counter = $_POST['counter'];
+			}
+			else
+			{
+				$counter = 0;
+			}
+			$base = $counter;
+
+
+			//form to select order to display packing list for
+			echo '<form method="POST">';
+			echo '<table>';
+			echo '<tr>';
+			while ($end == FALSE)
+			{
+				// radio butions to select new order
+				echo '<td>';
+				echo '<input type="radio" name="order_num" value="';
+				
+				echo $order[$counter]['order_id'];  //making order number/id the value it submits
+
+				//making oldest/first order automactical selected
+				if ($counter == 0)
+				{
+					echo '" checked>';
+				}
+				else
+				{
+					echo '">';
+				}
+
+				// print out order number next to radio button
+				echo $order[$counter]['order_id'];
+				echo '</td>';
+
+
+				$counter = $counter + 1;
+
+				if($counter == $base + 10) // if 10 entries have been printed end loop
+				{
+					$end = TRUE;
+				}
+				if(gettype($order[$counter]['order_id']) == gettype($empty)) // if next value does not exist in table end loop
+				{
+					$end = TRUE;
+				}
+			}
+			echo '</tr>';
+			echo '</table>';
+
+			echo '<input type="submit" value="submit">'; // submit selected order number
+			echo '</form>';
 			
-			// caculate new on hand amount of part
-			$new_onhand = $quanity[0]['onhand'] - $part[$part_ctr]['quantity'];
-			echo '<p>';
-			echo $new_onhand;
-			echo '</p>';
-
-			//$update = $DB->prepare('UPDATE warehouse_parts SET onhand = ? WHERE part_num = ?');
-			//$update->execute([$new_onhand,$part[$part_ctr]['part_num']]);
-
-			//echo '<p>4</p>';
-
-			$part_ctr = $part_ctr + 1;
-
-			//$part = $select_parts->fetch_assoc();
-		}
-		sql_update('UPDATE orders SET order_status = "Picked" WHERE order_id = ?',[$_POST['order_num']]);
-		//$update = $DB->prepare('UPDATE orders SET order_status = "Picked" WHERE order_id = ?');
-		//$update->execute([$_POST['order_num']]);
-		//echo '<p>5</p>';
-	}
-	*/
-	
-}
-
-//Refresh button to recheck for order
-echo 'Refresh Page:  ';
-echo '<form>';
-echo '<input type="submit" value="Refresh">';
-echo '</form>';
-
-echo '<br>';
-
-
-
-//finding oldest order neeing to be picked
-
-$order = sql_select('SELECT order_id FROM orders WHERE order_status = "Paid" ORDER BY order_id ASC',[]);
-
-if (gettype($order[0][0]) == gettype($empty))
-{
-	// if no orders have the status Paid
-	echo "<p>No orders avaible, please try again</p>";
-}
-else 
-{
-	// ************ fisrt print first 5 orders avaible with button to advance groups or in groups of 5************
-
-	if (gettype($_POST['order_num']) != gettype($empty))
-	{
-		$order_num = $_POST['order_num'];
-	}
-	else
-	{
-		$order_num = $order[0][0];
-	}
-
-	// Getting number of Orders avable to be Picked
-	$total = 0;
-	while (gettype($order[$total]['order_id']) != gettype($empty))
-	{
-		$total = $total + 1;
-	}
-
-	echo '<p>Orders Available to be Packed:  ';
-	echo $total;
-	echo '</p>';
-
-	//echo '</br>';
-
-	echo '<p>Select Order Number to See Packing List</p>';
-
-	$end = FALSE;
-
-	if(gettype($_POST['counter']) != gettype($empty))
-	{
-		$counter = $_POST['counter'];
-	}
-	else
-	{
-		$counter = 0;
-	}
-	$base = $counter;
-	
-	echo '<form method="POST">';
-	echo '<table>';
-	echo '<tr>';
-	while ($end == FALSE)
-	{
-		//make into radio butions to select new order
-		echo '<td>';
-		echo '<input type="radio" name="order_num" value="';
-		//echo 'Order Number: ';
-		echo $order[$counter]['order_id'];
-		echo '">';
-		echo $order[$counter]['order_id'];
-		echo '</td>';
-		//echo '   ';
-		 
-		if(gettype(($counter + 1) / 5) == gettype(1))
-		{
-			echo '</tr><tr>';
-		}
-
-		$counter = $counter + 1;
-
-		if($counter == $base + 25)
-		{
-			$end = TRUE;
-		}
-		if(gettype($order[$counter]['order_id']) == gettype($empty))
-		{
-			$end = TRUE;
-		}
-	}
-	echo '</table>';
-	echo '</tr>';
-	echo '<input type="submit" value="submit">';
-	echo '</form>';
-	echo '</br>';
-	//back button
-	
-	if ($counter > 25)
-	{
+			
 		
-		$new_counter = $base - 25;
-		echo '<form method="POST">';
-
-		echo '<input type="hidden" id="counter" name="counter" value="';
-		echo $new_counter;
-		echo '">';
-
-		echo '<input type="hidden" id="order_num" name="order_num" value="';
-		echo $order_num;
-		echo '">';
-
-		echo '<input type="submit" value="Previous">';
-		echo '</form>';
-	}
-	// next button
-	if ($counter != $total)
-	{
-		echo '<form method="POST">';
-		echo '<input type="hidden" id="counter" name="counter" value="';
-		echo $counter;
-		echo '">';
+			//back button
+			if ($counter > 10)
+			{
 		
-		echo '<input type="hidden" id="order_num" name="order_num" value="';
-		echo $order_num;
-		echo '">';
+				$new_counter = $base - 10;
+				echo '<form method="POST">';
 
-		echo '<input type="submit" value="Next">';
-		echo '</form>';
-	}
+				echo '<input type="hidden" id="counter" name="counter" value="';
+				echo $new_counter;
+				echo '">';
+
+				//passes order_num to allow for printed list to stay same when maipulating table of possible order numbers
+				echo '<input type="hidden" id="order_num" name="order_num" value="';
+				echo $order_num;
+				echo '">';
+
+				echo '<input type="submit" value="Previous">';
+				echo '</form>';
+			}
+
+			// next buttion to advance to the start being the next value after the last one in the table
+			if ($counter != $total)
+			{
+				echo '<form method="POST">';
+				echo '<input type="hidden" id="counter" name="counter" value="';
+				echo $counter;
+				echo '">';
+
+				//passes order_num to allow for printed list to stay same when maipulating table of possible order numbers
+				echo '<input type="hidden" id="order_num" name="order_num" value="';
+				echo $order_num;
+				echo '">';
+
+				echo '<input type="submit" value="Next">';
+				echo '</form>';
+			}
+			
+			//Title for packing list
+			echo '<h1>Packing List for Order:   ';
+			echo $order_num;
+			echo '</h1>';
 	
-	
+			// order_num = order_id
+			//get all parts assocated with order_id 
+			$parts = sql_select('SELECT * FROM order_parts WHERE order_id = ? ORDER BY part_num ASC',[$order_num]);
 
-		// Thinking 25 at a time in 5 rows of 5 order number and desplaying how many out of the total number of orders available
-		// $end = FALSE
-		// while loop - ($end == FALSE)
-			// print order Number
-			// increment Counter
-				// if order number is NULL 
-					// set $end to TRUE
-				//else if counter is eual to base + 25
-					// set $end to TRUE
-							// pass any needed _POST value back to see if used
-							// if conter is greater than 25
-								// desplay go bacck buttioon inown form that sets start to 
-								// counter - 25
-							// if $order[counter][0] is not NULL
-								// form with next button that passes counter
-	//echo 'valid';
+			// form to submit order number to print invoice and shipping label
+			echo "<form method='POST' action=$url/invoice_ship.php>"; // stating here to inclue table in forms formating
 
-	// ************ if order number is passed in, set order_num to it
-	//		else let $order[0][0] set it
-	//if (gettype($_POST['order_num']) != gettype($empty))
-	//{
-	//	$order_num = $_POST['order_num'];
-	//}
-	//else
-	//{
-	//	$order_num = $order[0][0];
-	//}
-	echo '</br>';
-	echo '<p>Packing List for Order:   ';
-	echo $order_num;
-	echo '</p>';
-	
-	$parts = sql_select('SELECT * FROM order_parts WHERE order_id = ? ORDER BY part_num ASC',[$order_num]);
-	
-	//start builing table
-	echo '<table border=1>';
-	echo '<tr>';
-	echo '<tr>';
+			//Table to hold packing list, with part number, description, weight and quantity ordered for each part
 
-	echo '<th>';
-	echo 'Part Number';
-	echo '</th>';
+			echo '<table border=1>';
+			echo '<tr>';
+			//echo '<tr>';
 
-	echo '<th>';
-	echo 'Part Description';
-	echo '</th>';
+			// Table headers
+			echo '<th>';
+			echo 'Part Number';
+			echo '</th>';
 
-	echo '<th>';
-	echo 'Part Weight';
-	echo '</th>';
+			echo '<th>';
+			echo 'Part Description';
+			echo '</th>';
 
-	echo '<th>';
-	echo 'Quantity Ordered';
-	echo '</th>';
+			echo '<th>';
+			echo 'Part Weight';
+			echo '</th>';
 
-	echo '</tr>';
-	// need to add hedders
+			echo '<th>';
+			echo 'Quantity Ordered';
+			echo '</th>';
 
-	$part_ctr = 0;
+			echo '</tr>';
+
+			//counter to progress though parts in the order
+			$part_ctr = 0;
 
 	
-	while (gettype($parts[$part_ctr]['part_num']) != gettype($empty))
-	{
-		$part = legacy_sql_query('SELECT number, description, weight FROM parts WHERE number = ?',[$parts[$part_ctr]['part_num']]);
-		//= $search3->fetchAll();
-		//echo '<p>fetched from search3</p>';
-		echo '<tr>';
+			while (gettype($parts[$part_ctr]['part_num']) != gettype($empty))
+			{
+				// getting part information about part_num from legacy DB
+				$part = legacy_sql_query('SELECT number, description, weight FROM parts WHERE number = ?',[$parts[$part_ctr]['part_num']]);
 
-		//echo '<td>Part Number: ';
-		echo '<td>';
-		echo $part[0]['number'];
-		echo '</td>';
+				echo '<tr>';
 
-		//echo '<td>Part Number status: ';
-		//echo $type;
-		//echo '</td>';
+				//Part Number
+				echo '<td>';
+				echo $part[0]['number'];
+				echo '</td>';
 
-		//echo '<td>Part Description: ';
-		echo '<td>';
-		echo $part[0]['description'];
-		echo '</td>';
+				//Part Description
+				echo '<td>';
+				echo $part[0]['description'];
+				echo '</td>';
 
-		//echo '<td>Part Weight: ';
-		echo '<td>';
-		echo $part[0]['weight'];
-		echo '</td>';
+				//Part Weight
+				echo '<td>';
+				echo $part[0]['weight'];
+				echo '</td>';
 
-		//echo '<td>Part Counter: ';
-		echo '<td>';
-		echo $part_ctr; 
-		echo '</td>';
+				// Quantity ordered
+				echo '<td>';
+				echo $parts[$part_ctr]['quantity']; 
+				echo '</td>';
 
-		echo '</tr>';
+				echo '</tr>';
 
-		$part_ctr = $part_ctr + 1;
-	}
+				$part_ctr = $part_ctr + 1;
+			}
 
-	echo '</table>';
+			echo '</table>';
 
-	echo '<br><br><br>';
+			
+
+			//passes order_num to get shipping label and invoice
+			echo '<input type="hidden" id="order_num" name="order_num" value="';
+			echo $order_num;
+			echo '">';
+			// button to navigate to invoice and shipping label
+			echo '<input type="submit" value="Order Picked">'; 
+
+			echo '</form>';
 	
-	// form button to mark order as Packed
-	
-	echo '<form method="POST">';
-
-	echo '<input type="hidden" id="order_num" name="order_num" value="';
-	echo $order_num;
-	echo '">';
-
-	echo '<input type="submit" value="Order Picked">'; // can change the value to desplay what we want to say
-
-	echo '</form>';
-	
-}
-
-
-?>
-
-
+		}
+	?>
 </html>
