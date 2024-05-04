@@ -9,7 +9,6 @@
 			header
 			{
 				padding: 1px;
-				width: 100%;
 				background-color: white;
 			}
 			table
@@ -133,7 +132,7 @@
 			echo 'Select Order Number to See Packing List</h2>';
 			echo '<p>Default Order is Oldest Order with Paid Status</p>';
 
-			$end = FALSE;
+			$end = FALSE; // indecator for when end of orders being dispalyed is reached
 
 			// Setting counter to 0 if no counter value is passed
 			if(gettype($_POST['counter']) != gettype($empty))
@@ -193,8 +192,8 @@
 			
 			
 		
-			//back button
-			if ($counter > 10)
+			//back button to desplay previous set of order
+			if ($counter > 10) 
 			{
 		
 				$new_counter = $base - 10;
@@ -246,7 +245,6 @@
 
 			echo '<table border=1>';
 			echo '<tr>';
-			//echo '<tr>';
 
 			// Table headers
 			echo '<th>';
@@ -311,6 +309,7 @@
 			echo '<input type="hidden" id="order_id" name="order_id" value="';
 			echo $order_num;
 			echo '">';
+
 			// button to navigate to invoice and shipping label
 			echo '<input type="submit" value="Order Packed">'; 
 
