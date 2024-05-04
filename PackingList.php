@@ -35,7 +35,7 @@
 				margin: 0;
 				padding: 0;
 				background-attachment: fixed;
-				background-image: linear-gradient(-50deg, lightblue, lightblue); 
+				background-image: linear-gradient(to bottom right, #347385, #ADD8E6, #347385); 
 			}
 			h1
 			{
@@ -44,6 +44,10 @@
 			h2
 			{
 				padding-left:30px
+			}
+			h3 
+			{
+				text-align: center;
 			}
 			p
 			{
@@ -60,11 +64,6 @@
     </head>
 	<?php
 
-		//include "format.php";
-
-		//echo '<p> This will print out the packing list </p>';
-
-		//include 'DB_Access.php';
 		include 'functions.php';
 
 
@@ -77,6 +76,23 @@
 		echo '</form>';
 
 		echo '<br>';
+
+		// if order_id is passed, marked as Packed 
+
+		if (gettype($_POST['order_id']) != gettype($empty))
+		{
+			$status = sql_select('SELECT order_status FROM orders WHERE order_id = ?', [$_POST['order_id']]);
+
+			if ($status[0]['order_status'] == 'Paid') 
+			//making sure that order is only at Paid status to prevent resubmitted orders from having status changed
+			{
+				sql_update('UPDATE orders SET order_status = "Packed" WHERE order_id = ?', [$_POST['order_id']]);
+
+				echo '<h3>Order ';
+				echo $_POST['order_id'];
+				echo ' had been packed and is ready for shipping</h3>';
+			}
+		}
 
 
 
@@ -224,7 +240,7 @@
 			$parts = sql_select('SELECT * FROM order_parts WHERE order_id = ? ORDER BY part_num ASC',[$order_num]);
 
 			// form to submit order number to print invoice and shipping label
-			echo "<form method='POST' action=$url/invoice_ship.php>"; // stating here to inclue table in forms formating
+			echo "<form method='POST'>"; // stating here to inclue table in forms formating
 
 			//Table to hold packing list, with part number, description, weight and quantity ordered for each part
 
@@ -292,11 +308,11 @@
 			
 
 			//passes order_num to get shipping label and invoice
-			echo '<input type="hidden" id="order_num" name="order_num" value="';
+			echo '<input type="hidden" id="order_id" name="order_id" value="';
 			echo $order_num;
 			echo '">';
 			// button to navigate to invoice and shipping label
-			echo '<input type="submit" value="Order Picked">'; 
+			echo '<input type="submit" value="Order Packed">'; 
 
 			echo '</form>';
 	
