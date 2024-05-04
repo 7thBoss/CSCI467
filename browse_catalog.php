@@ -50,8 +50,7 @@
     <body>
 		<?php
 			include "functions.php";
-	
-	
+
 			if (!isset($_POST["order_id"]))
 			{
 				sql_insert("INSERT INTO orders (order_status) VALUES ('Selected')");
@@ -98,7 +97,7 @@
 			foreach($legacy_parts as $legacy_part)
 			{
 				//Find matching part in warehouse
-				$part = sql_select("SELECT * FROM warehouse_parts WHERE part_num = ?", [$legacy_part["number"]])[0];
+				$part = sql_select("SELECT * FROM warehouse_parts WHERE part_num = ? AND quantity > 0", [$legacy_part["number"]])[0];
 
 				//If the quantity is more than 0, print it
 				if ($part)
