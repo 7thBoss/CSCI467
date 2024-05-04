@@ -1,12 +1,9 @@
 
 <html>
-<script>
-
-</script>
 <center>
    <head>
       <style>
-			header
+	header
         {
           padding: 1px;
           width: 100%;
@@ -78,23 +75,52 @@
         #checkName:hover {opacity: 1}
 
         #redirect {
-                background-color: white;
-                padding: 10px 25px;
+                background-color: blue;
+                padding: 10px 10px;
                 cursor: pointer;
                 margin 4px 2px;
                 font-size 10px;
                 text-align: center;
                 border-radius: 5px;
-                opacity: .5;
+                opacity: .7;
                 transition: 0.2s;
                 font-family: Monospace;
+                color: white;
+        }
+        #redirect2 {
+                background-color: red;
+                padding: 8px 10px;
+                cursor: pointer;
+                margin 4px 2px;
+                font-size 10px;
+                text-align: center;
+                border-radius: 5px;
+                opacity: .7;
+                transition: 0.2s;
+                font-family: Monospace;
+                color: white;
+        }
+        a
+        {
+                padding-right: 50px;
         }
 
         #redirect:hover {opacity: 1}
       </style>
 
       <header>
+      <?php    
+                // Navigation to UpdateInventory page       
+                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/UpdateInventory.php'><input type='button' id='redirect' value='Receiving'/></a>";
+                
+                // Navigation to PackingList page
+                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/PackingList.php'><input type='button' id='redirect' value='Packing'/></a>";
+
+                // Navigation to Invoice Ship page
+                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/invoice_ship.php'><input type='button' id='redirect' value='Shipping'/></a>";
+        ?>
       <h1>Print Invoice and Shipping Label</h1>
+
       </header>
 
     </head>
@@ -103,11 +129,17 @@
 
 session_start();
 
+// // Navigation to UpdateInventory page
+// echo "<a href='$url/UpdateInventory.php'><input type='button' id='redirect' value='Receiving'/></a>";
+
+// // Navigation to PackingList page
+// echo "<a href='$url/PackingList.php'><input type='button' id='redirect' value='Warehouse: Packing'/></a>";
+
+// // Navigation to Invoice Ship page
+// echo "<a href='$url/invoice_ship.php'><input type='button' id='redirect' value='Warehouse: Shipping'/></a>";
+
 include "functions.php";
 
-function hello() {
-        echo "hello";
-     }
 // echo "<h1>Invoice & Shipping</h1>";
     echo "<br/>";
 
@@ -131,7 +163,7 @@ function hello() {
                 <td>
                         <form action='".$url."/invoice_ship.php' method='POST'>
                           <input type='hidden' name='order_id' value='".$displayOrder["order_id"]."'>
-                          <input type='submit' value='Print Label'>
+                          <input type='submit' id='redirect2' value='Print Label'>
                         </form>
                 </td>
         </tr>";
@@ -262,11 +294,10 @@ function hello() {
                 //***************************************************
                 echo "<form action='$url/ship_order.php' method='POST'>";
 
-                echo '<input type=submit name="Fulfilled" value="Confirm Shipment"/>';
+                echo '<input type=submit name="confirm" id="redirect" value="Confirm Shipment"/>';
 
                 echo "<form/>";
         }
-
 
 ?>
 
