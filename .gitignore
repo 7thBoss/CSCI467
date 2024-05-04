@@ -1,0 +1,6 @@
+#Ignore file 
+
+*.json
+*.sqlite*
+*.wsuo
+*.vsidx
