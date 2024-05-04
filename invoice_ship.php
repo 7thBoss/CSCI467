@@ -1,3 +1,6 @@
+<?php
+include "functions.php";
+?>
 
 <html>
 <center>
@@ -111,13 +114,13 @@
       <header>
       <?php    
                 // Navigation to UpdateInventory page       
-                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/UpdateInventory.php'><input type='button' id='redirect' value='Receiving'/></a>";
+                echo "<a href='$url/UpdateInventory.php'><input type='button' id='redirect' value='Receiving'/></a>";
                 
                 // Navigation to PackingList page
-                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/PackingList.php'><input type='button' id='redirect' value='Packing'/></a>";
+                echo "<a href='$url/PackingList.php'><input type='button' id='redirect' value='Packing'/></a>";
 
                 // Navigation to Invoice Ship page
-                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/invoice_ship.php'><input type='button' id='redirect' value='Shipping'/></a>";
+                echo "<a href='$url/invoice_ship.php'><input type='button' id='redirect' value='Shipping'/></a>";
         ?>
       <h1>Print Invoice and Shipping Label</h1>
 
@@ -128,17 +131,6 @@
 <?php
 
 session_start();
-
-// // Navigation to UpdateInventory page
-// echo "<a href='$url/UpdateInventory.php'><input type='button' id='redirect' value='Receiving'/></a>";
-
-// // Navigation to PackingList page
-// echo "<a href='$url/PackingList.php'><input type='button' id='redirect' value='Warehouse: Packing'/></a>";
-
-// // Navigation to Invoice Ship page
-// echo "<a href='$url/invoice_ship.php'><input type='button' id='redirect' value='Warehouse: Shipping'/></a>";
-
-include "functions.php";
 
 // echo "<h1>Invoice & Shipping</h1>";
     echo "<br/>";
