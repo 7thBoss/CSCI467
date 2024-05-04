@@ -19,7 +19,6 @@ CREATE TABLE order_parts (
 CREATE TABLE warehouse_parts ( 
     part_num INT(11) NOT NULL,
     quantity INT(32) NOT NULL,
-    onhand INT(32) NOT NULL,
     PRIMARY KEY (part_num)
 );
 
