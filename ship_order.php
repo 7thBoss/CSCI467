@@ -74,22 +74,37 @@
         #checkName:hover {opacity: 1}
 
         #redirect {
-                background-color: white;
-                padding: 10px 25px;
+                background-color: blue;
+                padding: 10px 10px;
                 cursor: pointer;
                 margin 4px 2px;
                 font-size 10px;
                 text-align: center;
                 border-radius: 5px;
-                opacity: .5;
+                opacity: .7;
                 transition: 0.2s;
                 font-family: Monospace;
+                color: white;
+        }
+        a
+        {
+          padding-right: 50px;
         }
 
         #redirect:hover {opacity: 1}
       </style>
 
       <header>
+      <?php    
+                // Navigation to UpdateInventory page       
+                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/UpdateInventory.php'><input type='button' id='redirect' value='Receiving'/></a>";
+                
+                // Navigation to PackingList page
+                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/PackingList.php'><input type='button' id='redirect' value='Packing'/></a>";
+
+                // Navigation to Invoice Ship page
+                echo "<a href='https://students.cs.niu.edu/~z1944667/CSCI467/invoice_ship.php'><input type='button' id='redirect' value='Shipping'/></a>";
+        ?>
       <h1>Shipment Confirmation</h1>
       </header>
 
@@ -215,6 +230,17 @@ echo "</table><br/>";
 // Send email confirmation
 send_email("yudish.sheth09@gmail.com", "Order $order_id: Confirmation", "All items in your order is packed and shipped to $address");             
 
+//***************************************************
+// Order shipped. Update status.
+//***************************************************
+echo "<form action='$url/packinglist.php' method='POST'>";
+
+echo "<h4>Mark order as shipped. Confirmation will be sent to customer.</h4>";
+// Note: Would be cool if this button connected to a printer and printed the label.
+echo '<input type=submit name="Fulfilled" id="redirect" value="Complete Order"/>';
+
+echo "<form/>";
+
 // Check if form is submitted
 if (isset($_POST['Fulfilled'])) {
 
@@ -225,16 +251,7 @@ if (isset($_POST['Fulfilled'])) {
 
 echo "<br/><br/>";
 
-//***************************************************
-// Order shipped. Update status.
-//***************************************************
-echo "<form action='$url/packinglist.php' method='POST'>";
 
-echo "<h4>Mark order as shipped. Confirmation will be sent to customer.</h4>";
-// Note: Would be cool if this button connected to a printer and printed the label.
-echo '<input type=submit name="Fulfilled" value="Complete Order"/>';
-
-echo "<form/>";
 
 ?>
 
