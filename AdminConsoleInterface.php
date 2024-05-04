@@ -48,7 +48,7 @@
             margin-right: 10px;
             border: 1px solid #ccc;
             border-radius: 4px; /* Rounded corners for inputs and selects */
-            box-sizing: border-box; /*  Includes padding */
+            box-sizing: border-box; // Includes padding
         }
 
             input[type="submit"] {
@@ -66,10 +66,12 @@
 
     </style>
 </head>
-    
+
+
 <?php
 session_start();
 include 'functions.php';
+
 
 /***********************************
 *
@@ -102,6 +104,12 @@ function draw_table($rows) {
 try {
     $pdo = connection();
 
+    /**********************
+    *
+    * FILTERING ORDERS
+    *
+    ***********************/
+
     // default filter values (nothing gets filtered out)
     $status = "%";
     $dateMin = "1960-01-01";
@@ -109,41 +117,37 @@ try {
     $priceMin = 0;
     $priceMax = 999999.99;
 
-    /**********************
-    *
-    * FILTERING ORDERS
-    *
-    ***********************/
-    if( isset($_GET["filter"]) ) {
-        if($_GET["status"] == "selected") {
+    if( isset($_POST["filter"]) ) {
+        if($_POST["status"] == "selected") {
             $status = "Selected";
         }
-        if($_GET["status"] == "paid") {
+        if($_POST["status"] == "paid") {
             $status = "Paid";
         }
-        else if($_GET["status"] == "shipped") {
+        else if($_POST["status"] == "shipped") {
             $status = "Shipped";
         }
 
-        if(!empty($_GET["dateMin"])) {
-            $dateMin = $_GET["dateMin"];
+        if(!empty($_POST["dateMin"])) {
+            $dateMin = $_POST["dateMin"];
         }
 
-        if(!empty($_GET["dateMax"])) {
-            $dateMax = $_GET["dateMax"];
+        if(!empty($_POST["dateMax"])) {
+            $dateMax = $_POST["dateMax"];
+        }
+/*
+        if(!empty($_POST["priceMin"])) {
+
+
+            $priceMin = $_POST["priceMin"];
         }
 
-        if(!empty($_GET["priceMin"])) {
-            $priceMin = $_GET["priceMin"];
-        }
+        if(!empty($_POST["priceMax"])) {
 
-        if(!empty($_GET["priceMax"])) {
-            $priceMax = $_GET["priceMax"];
-        }
+            $priceMax = $_POST["priceMax"];
+        }*/
     }
-    if(isset($_GET["order_id"])) {
-        echo "<a href=\"AdminConsoleInterface.php\">Go back to viewing orders</a><br/>";
-        echo "<h2>Order Detail for Order Number {$_GET["order_id"]}</h2>";
+
 
     /**************************
     *
@@ -152,25 +156,23 @@ try {
     *  ON ORDER_ID LINK
     *
     *****************************/
+    if(isset($_GET["order_id"])) {
+        echo "<a href=\"AdminConsoleInterface.php\">Go back to viewing orders</a><br/>";
+        echo "<h2>Order Detail for Order Number {$_GET["order_id"]}</h2>";
+
+
         echo "<h3>Order Information</h3>";
         $rs = $pdo->prepare("SELECT order_id,order_status,order_date FROM orders WHERE order_id = :order_id");
         $rs->execute(array(":order_id" => $_GET["order_id"]));
         $order = $rs->fetchAll(PDO::FETCH_ASSOC);
 
-        if (!empty($order)) {
-           // Calculate total price and total weight for the order
-           $total_price = total_price($order[0]['order_id']);
-           $total_weight = total_weight($order[0]['order_id']);
+        if(!empty($order)) {
 
-           // Append total price and weight to the order details
-           $order[0]['total_price'] = $total_price;
-           $order[0]['total_weight'] = $total_weight;
+        draw_table($order);
+        } else {
+        echo "<p>No results found</p>";
+}
 
-           // Draw the table with the updated order details
-           draw_table($order);
-       } else {
-           echo "<p>No results found</p>";
-       }
 
         echo "<h3>Items Ordered</h3>";
         $rs = $pdo->prepare("SELECT order_id,part_num,quantity FROM order_parts WHERE order_id = :order_id");
@@ -182,6 +184,8 @@ try {
         else {
             echo "<p> No results found</p>";
         }
+
+
 
         echo "<h3>Customer Information</h3>";
         $rs = $pdo->prepare("SELECT customer_name,address,email FROM orders WHERE order_id = :order_id");
@@ -197,11 +201,12 @@ try {
         return;
     }
 
+
 ?>
 <a href="SetCharges.php"> Click here to set shipping charges</a> <br/>
 
 </br>
-    <form method="get" action="AdminConsoleInterface.php">
+    <form method="post" action="AdminConsoleInterface.php">
     <div style="text-align: left;">Filter orders by:</div> 
     <label for="status">Status</label>
     <select name="status">
@@ -220,7 +225,8 @@ try {
     </form>
 </div>
 <?php
-    
+
+
     /*****************************
     *
     *
@@ -230,34 +236,75 @@ try {
     ******************************/
     // display orders using filters (if any)
     echo "<h2> Orders </h2>";
+
     $sql = "SELECT order_id,order_status,order_date FROM orders WHERE order_status LIKE :status " .
            "AND order_date >= :dateMin AND order_date <= :dateMax;";
+        //"AND price_total >= :priceMin AND price_total <= :priceMax;";
     $rs = $pdo->prepare($sql);
-    // execute query using either filter values from $_GET or defaults
-    $rs->execute(array(":status" => $status, ":dateMin" => $dateMin, ":dateMax" => $dateMax));
+    // execute query using either filter values from $_POST or defaults
+    $rs->execute(array(":status" => $status, ":dateMin" => $dateMin, ":dateMax" => $dateMax)); //":priceMin" => $priceMin, ":priceMax" => $priceMax));
     $rowsOrders = $rs->fetchAll(PDO::FETCH_ASSOC);
 
-    if (!empty($rowsOrders)) {
+/*
+    if (isset($_POST["priceMin"]) && ! isset($_POST["priceMax"])) {
+    $orders = sql_select("SELECT order_id FROM order_parts WHERE order_id = ? AND SUM(price) > ? GROUP BY order_id", [order_id, min_price]);
+
+    } else if {
+       (isset($_POST["priceMax"]) && ! isset($_POST["priceMin"]))
+     $orders = sql_select("SELECT order_id FROM order_parts WHERE order_id = ? AND SUM(price) < ? GROUP BY order_id", [order_id, max_price]);
+
+    } else if {
+       (isset($_POST["priceMin"]) && isset($_POST["priceMax"]))
+    $orders = sql_select("SELECT order_id FROM order_parts WHERE order_id = ? AND SUM(price) > ? AND SUM(price) < ? GROUP BY order_id", [order_id, min_price, max_price]);
+
+    } else {
+       //sql_select("SELECT SUM(price) FROM order_parts WHERE order_id = ?", array("order_id");
+    $orders = sql_select("SELECT order_id FROM order_parts WHERE order_id = ? GROUP BY order_id", [order_id]);
+    }
+*/
+   if (!empty($rowsOrders)) {
     echo "<table border='1' cellspacing='1'>";
     echo "<tr><th>Order ID</th><th>Status</th><th>Ordered Date</th><th>Total Price</th><th>Total Weight</th></tr>";
 
-    foreach ($rowsOrders as $rowOrder) {
-        //calculate the shipping and handling
-        $shipping_and_handling = get_shipping_cost_by_weight($total_weight);
 
-        //Add shipping and handling to total
-        $total_price += $total_weight * $shipping_and_handling;
+    if ($_POST["priceMin"] == "") {
+       unset($_POST["priceMin"]);
+    }
+    if ($_POST["priceMax"] == "") {
+       unset($_POST["priceMax"]);
+    }
+
+
+    foreach ($rowsOrders as $rowOrder) {
 
         // Calculate total price and weight for each order
         $total_price = total_price($rowOrder['order_id']);
         $total_weight = total_weight($rowOrder['order_id']);
+
+        $shipping_and_handling = get_shipping_cost_by_weight($total_weight);
+        $total_price_with_shipping = $total_price + $shipping_and_handling;
+
+       //echo $total_price_with_shipping;
+
+      if  (isset($_POST["priceMin"])) {
+      if ($total_price_with_shipping < $_POST["priceMin"]) {
+      	continue;
+      }
+    }
+
+       if (isset($_POST["priceMax"])) {
+       if ($total_price_with_shipping > $_POST["priceMax"]) {
+         continue;
+      }
+    }
+
 
         echo "<tr>";
         // Display link to order details
         echo "<td><a href=\"AdminConsoleInterface.php?order_id={$rowOrder['order_id']}\">{$rowOrder['order_id']}</a></td>";
         echo "<td>{$rowOrder['order_status']}</td>";
         echo "<td>{$rowOrder['order_date']}</td>";
-        echo "<td>\${$total_price}</td>";
+        echo "<td>\${$total_price_with_shipping}</td>";
         echo "<td>{$total_weight} lbs</td>";
         echo "</tr>";
     }
@@ -265,6 +312,7 @@ try {
 } else {
     echo "<p>No results found</p>";
 }
+
 
     echo '</br></br></br>';
 
