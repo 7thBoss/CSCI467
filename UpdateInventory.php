@@ -142,7 +142,9 @@ if(gettype($_POST['part_num']) != gettype($empty))  //using $empty as an unintel
 	}
 	else // if not a valid part number, desplay error message
 	{
-		echo '<h3>An error has occured, inventory had not been updated. </br>Please try again.</h3>';
+		echo '<h3>An error has occured, inventory had not been updated for Part: ';
+		echo $_POST['part_num'];
+		echo '. </br>Please try again.</h3>';
 	}
 }
 
