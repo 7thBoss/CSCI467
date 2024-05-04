@@ -1,6 +1,10 @@
+
 <html>
+<script>
+
+</script>
 <center>
-<head>
+   <head>
       <style>
 			header
         {
@@ -27,7 +31,7 @@
         }
         table {
         border-collapse: collapse;
-        width: 50%;
+        width: 45%;
         background-color: white;
         }
         table, tr, th, td {
@@ -101,116 +105,167 @@ session_start();
 
 include "functions.php";
 
+function hello() {
+        echo "hello";
+     }
 // echo "<h1>Invoice & Shipping</h1>";
     echo "<br/>";
 
     // connect to spockDB
-    $pdo = connection();
 
-    // From Print Packing List, selected order_num is passed for corresponding invoice and shipping label
-    $order_id = $_POST["order_num"];
-
-    // Get current order details from order_parts
-    $currentOrder = sql_select("SELECT * FROM order_parts WHERE order_id = ?;", [$order_id]);
-    
-    //**************************
-    // Invoice Label
-    //**************************
-    echo "<h4>Invoice: </h4>";
     echo "<table>";
+    // Show all orders that have been packed.
+    $displayOrders = sql_select("SELECT * FROM orders where order_status = 'Packed'; ");
+    // print_r($displayOrders);
 
-    echo '<th>';
-    echo 'Description';
-    echo '</th>';
+    echo "<tr><th>Date</th>
+              <th>Status</th>
+              <th>Order ID</th>
+              <th>Invoice & Shipping</th></tr>";
 
-    echo '<th>';
-    echo 'Quantity';
-    echo '</th>';
+    foreach($displayOrders as $displayOrder){
+        echo "<tr>
+                <td>".$displayOrder["order_date"]."</td>
+                <td>".$displayOrder["order_status"]."</td>
+                <td>".$displayOrder["order_id"]." </td>
+                <td>
+                        <form action='".$url."/invoice_ship.php' method='POST'>
+                          <input type='hidden' name='order_id' value='".$displayOrder["order_id"]."'>
+                          <input type='submit' value='Print Label'>
+                        </form>
+                </td>
+        </tr>";
+    }
+    echo "</table>";
 
-    echo '<th>';
-    echo 'Price';
-    echo '</th>';
+       if(isset($_POST["order_id"])){         
 
-    // Print Invoice details
-    foreach($currentOrder as $row){
+                // From Print Packing List, selected order_num is passed for corresponding invoice and shipping label
+                $order_id = $_POST['order_id'];
 
-        echo "<tr>";
+                // Get current order details from order_parts
+                $currentOrder = sql_select("SELECT * FROM order_parts WHERE order_id = ?;", [$order_id]);
+                
+                //**************************
+                // Invoice Label
+                //**************************
+                echo "<h4>Invoice: </h4>";
+                echo "<table>";
 
-          // Store part number in $part_num
-          $part_num = $row["part_num"]; 
+                echo '<th>';
+                echo 'Description';
+                echo '</th>';
 
-          $currentPart = legacy_sql_query("SELECT description,price,weight FROM parts WHERE number = ?;", [$part_num]);
-          //print_r($currentPart);
-        
-          // 2. part name printed
-          $part_name = $currentPart[0]["description"];
-          echo "<td>$part_name</td>";
+                echo '<th>';
+                echo 'Quantity';
+                echo '</th>';
 
-          // 1. Print part quantity
-          $qty = $row["quantity"];
-          echo"<td>$qty</td>";
+                echo '<th>';
+                echo 'Price';
+                echo '</th>';
 
-          // 3. part price printed
-          $part_price = $currentPart[0]["price"];
-          $part_price *= $qty;
-          echo "<td>$$part_price<td>";
-        
-        echo "<tr>";
-        
-        // Keep a count of the total amount and weight
-        $amount+=$part_price;
-        $order_weight+=$currentPart[0]["weight"];
-      }
+                // Print Invoice details
+                foreach($currentOrder as $row){
 
-      echo "</table>";
+                        echo "<tr>";
 
-      $shippingCost = get_shipping_cost_by_weight($order_weight);
+                        // Store part number in $part_num
+                        $part_num = $row["part_num"]; 
 
-      // add shipping cost to invoice total
-      $invoice_total = $amount + $shippingCost;
-      
-      echo "<br/><br/>";
-      // 4. total amount, total weight, shipping cost, and invoice total printed
-      echo "<table>";
-      
-      echo "<tr><td>Total Amount</td>      <td>$$amount </td></tr>";
-      echo "<tr><td>Total Weight</td>      <td>$order_weight lbs</td></tr>";
-      echo "<tr><td>Shipping Cost</td>     <td> $$shippingCost</td></tr>";
-      echo "<tr><td>Invoice Total</td>     <td> $$invoice_total</td></tr>";
-      
-      echo "</table>";
+                        $currentPart = legacy_sql_query("SELECT description,price,weight FROM parts WHERE number = ?;", [$part_num]);
+                        //print_r($currentPart);
+                        
+                        // 2. part name printed
+                        $part_name = $currentPart[0]["description"];
+                        echo "<td>$part_name</td>";
 
-    //*************************
-    // Shipping Label
-    //**************************
-    echo "<h4>Shipping: </h4>";
+                        // 1. Print part quantity
+                        $qty = $row["quantity"];
+                        echo"<td>$qty</td>";
 
-    $currentCustomerSpock = sql_select("SELECT * FROM orders WHERE order_id = ? AND order_status = 'Paid';",  [$order_id]);
-    // print_r($currentCustomerSpock);
+                        // 3. part price printed
+                        $part_price = $currentPart[0]["price"];
+                        $part_price *= $qty;
+                        echo "<td>$$part_price<td>";
+                        
+                        echo "<tr>";
+                        
+                        // Keep a count of the total amount and weight
+                        $amount+=$part_price;
+                        $order_weight+=$currentPart[0]["weight"];
+                }
 
-    $name = $currentCustomerSpock[0]["customer_name"];
-    $address = $currentCustomerSpock[0]["address"];
-    $email = $currentCustomerSpock[0]["email"];
+                echo "</table>";
 
-    // echo $name . $address . $email;
+                $shippingCost = get_shipping_cost_by_weight($order_weight);
 
-    echo "$name <br/> $address <br/> Click to:<br/><br/>";
+                // add shipping cost to invoice total
+                $invoice_total = $amount + $shippingCost;
+                
+                echo "<br/>";
+                // 4. total amount, total weight, shipping cost, and invoice total printed
+                echo "<table>";
 
-    // Store session variables
-    $_SESSION["order_id"] = $_POST["order_num"];
-    $_SESSION["name"]     = $name;
-    $_SESSION["address"]  = $address;
-    $_SESSION["contact"]  = $email;
+                echo "<tr><th>Total Amount</th>
+                          <th>Total Weight</th>
+                          <th>Shipping Cost</th>
+                          <th>Invoice Total</th></tr>";
 
-    //***************************************************
-    // To shipment confirmation page.
-    //***************************************************
-    echo "<form action='$url/ship_order.php' method='POST'>";
+                echo "<tr><td>$$amount </td>";
+                echo "<td>$order_weight lbs</td>";
+                echo "<td>$$shippingCost</td>";
+                echo "<td>$$invoice_total</td></tr>";
+                
+                echo "</table>";
 
-    echo '<input type=submit name="Fulfilled" value="Confirm Shipment"/>';
+                //*************************
+                // Shipping Label
+                //**************************
+                echo "<h4>Shipping: </h4>";
 
-    echo "<form/>";
+                // echo $order_id;
+                $currentCustomerSpock = sql_select("SELECT * FROM orders WHERE order_id = ? AND order_status = 'Packed';",  [$order_id]);
+                // print_r($currentCustomerSpock);
+                $name = $currentCustomerSpock[0]["customer_name"];
+                $address = $currentCustomerSpock[0]["address"];
+                $email = $currentCustomerSpock[0]["email"];
 
+                echo "<table>";
+
+                // echo "<tr><th>Customer Name</th>
+                //           <th>Email</th>
+                //           <th>Shipping Address</th></tr>";
+
+                // echo "<tr><td>$name </td>
+                //           <td>$email</td>
+                //           <td>$address</td></tr>";
+
+                echo "<tr><th>Shipping Address</th>
+                          <th>Customer Name</th>
+                          <th>Email</th></tr>";
+
+                echo "<tr><td>$address </td>
+                          <td>$name</td>
+                          <td>$email</td></tr>";                
+
+                echo "</table><br/>";
+                
+
+                // Store session variables
+                $_SESSION["order_id"] = $order_id;
+                $_SESSION["name"]     = $name;
+                $_SESSION["address"]  = $address;
+                $_SESSION["contact"]  = $email;
+
+                //***************************************************
+                // To shipment confirmation page.
+                //***************************************************
+                echo "<form action='$url/ship_order.php' method='POST'>";
+
+                echo '<input type=submit name="Fulfilled" value="Confirm Shipment"/>';
+
+                echo "<form/>";
+        }
 
 
 ?>

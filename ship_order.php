@@ -171,14 +171,19 @@ foreach($currentOrder as $row){
   // add shipping cost to invoice total
   $invoice_total = $amount + $shippingCost;
   
-  echo "<br/><br/>";
+  echo "<br/>";
   // 4. total amount, total weight, shipping cost, and invoice total printed
   echo "<table>";
-  
-  echo "<tr><td>Total Amount</td>      <td>$$amount </td></tr>";
-  echo "<tr><td>Total Weight</td>      <td>$order_weight lbs</td></tr>";
-  echo "<tr><td>Shipping Cost</td>     <td> $$shippingCost</td></tr>";
-  echo "<tr><td>Invoice Total</td>     <td> $$invoice_total</td></tr>";
+
+  echo "<tr><th>Total Amount</th>
+            <th>Total Weight</th>
+            <th>Shipping Cost</th>
+            <th>Invoice Total</th></tr>";
+
+  echo "<tr><td>$$amount </td>";
+  echo "<td>$order_weight lbs</td>";
+  echo "<td>$$shippingCost</td>";
+  echo "<td>$$invoice_total</td></tr>";
   
   echo "</table>";
 
@@ -187,7 +192,25 @@ foreach($currentOrder as $row){
 //**************************
 echo "<h4>Shipping: </h4>";
 
-echo "$name <br/> $address <br/> Order confirmation sent to: $email <br/><br/>";
+echo "<table>";
+
+// echo "<tr><th>Customer Name</th>
+//           <th>Email</th>
+//           <th>Shipping Address</th></tr>";
+
+// echo "<tr><td>$name </td>
+//           <td>$email</td>
+//           <td>$address</td></tr>";
+
+echo "<tr><th>Shipping Address</th>
+          <th>Customer Name</th>
+          <th>Email</th></tr>";
+
+echo "<tr><td>$address </td>
+          <td>$name</td>
+          <td>$email</td></tr>";                
+
+echo "</table><br/>";
 
 // Send email confirmation
 send_email("yudish.sheth09@gmail.com", "Order $order_id: Confirmation", "All items in your order is packed and shipped to $address");             
@@ -200,14 +223,16 @@ if (isset($_POST['Fulfilled'])) {
   
 }
 
+echo "<br/><br/>";
+
 //***************************************************
 // Order shipped. Update status.
 //***************************************************
 echo "<form action='$url/packinglist.php' method='POST'>";
 
-echo "Mark order as shipped. Confirmation will be sent to customer";
+echo "<h4>Mark order as shipped. Confirmation will be sent to customer.</h4>";
 // Note: Would be cool if this button connected to a printer and printed the label.
-echo '<input type=submit name="Fulfilled" value="Return To Orders"/>';
+echo '<input type=submit name="Fulfilled" value="Complete Order"/>';
 
 echo "<form/>";
 
