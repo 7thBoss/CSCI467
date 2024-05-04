@@ -232,12 +232,12 @@ echo "<tr><td>$address </td>
 echo "</table><br/>";
 
 // Send email confirmation
-send_email("$email", "Order $order_id: Confirmation", "All items in your order is packed and shipped to $address");             
+send_email("yudish.sheth09@gmail.com", "Order $order_id: Confirmation", "All items in your order is packed and shipped to $address");             
 
 //***************************************************
 // Order shipped. Update status.
 //***************************************************
-echo "<form action='$url/packinglist.php' method='POST'>";
+echo "<form action='$url/PackingLsist.php' method='POST'>";
 
 echo "<h4>Mark order as shipped. Confirmation will be sent to customer.</h4>";
 // Note: Would be cool if this button connected to a printer and printed the label.
