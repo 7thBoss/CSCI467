@@ -232,7 +232,7 @@ echo "<tr><td>$address </td>
 echo "</table><br/>";
 
 // Send email confirmation
-send_email("yudish.sheth09@gmail.com", "Order $order_id: Confirmation", "All items in your order is packed and shipped to $address");             
+send_email("$email", "Order $order_id: Confirmation", "All items in your order is packed and shipped to $address");             
 
 //***************************************************
 // Order shipped. Update status.
