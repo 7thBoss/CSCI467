@@ -7,9 +7,9 @@
 	/**/
 
 	//User field for sql and directory calls
-	$user = "z1977114";
+	$user = "z1915820";
 	
-	//Url field for 
+	//Url field for the main directory
 	$url = "https://students.cs.niu.edu/~".$user."/CSCI467";
 
 	/*	Sends an email as auto.system.mailer.
@@ -19,7 +19,29 @@
 	 */
 	function send_email($to, $subject, $message)
 	{
-		mail($to, $subject, $message, "From: auto.system.mailer@gmail.com");
+		//Get parameters and prepare them
+		$data = ['to' => $to, 'subject' => $subject, 'html' => $message];
+		
+		$curl = curl_init();
+
+		//Send email
+		curl_setopt_array($curl, array(
+			CURLOPT_URL => 'https://api.mailgun.net/v3/sandbox0d6f068e979b45f3848e5ca327631ff1.mailgun.org/messages?from=auto.system.mailer%40gmail.com&'.http_build_query($data),
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_ENCODING => '',
+			CURLOPT_MAXREDIRS => 10,
+			CURLOPT_TIMEOUT => 0,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+			CURLOPT_CUSTOMREQUEST => 'POST',
+			CURLOPT_HTTPHEADER => array(
+				'Authorization: Basic YXBpOmMwMDczZGJhNWI1ZWY0Y2E1YzlmNzE0NzkzMDEyNjc4LTg2MjIwZTZhLWEyNmI5YTlj'
+			),
+		));
+
+		curl_exec($curl);
+
+		curl_close($curl);
 	}
 
 	/*	Creates connection to legacy database and queries database
@@ -63,7 +85,7 @@
 			if (!isset($GLOBALS["pdo"]))
 			{
 				$dsn = "mysql:host=courses;port=3306;dbname=".$GLOBALS["user"];
-				$pdo = new PDO($dsn, $GLOBALS["user"], "2001Jul07");
+				$pdo = new PDO($dsn, $GLOBALS["user"], "2002Sep17");
 				$GLOBALS["pdo"] = $pdo;
 			}
 			//Otherwise, use the created one
@@ -95,7 +117,7 @@
 	 *	$query represents an SQL Query. Only INSERT statements should be used
 	 *	$data represents an array of values to insert, not optional
 	 */
-	function sql_insert($query, $data)
+	function sql_insert($query, $data = [])
 	{
 			$insert = connection()->prepare($query);
 			$insert->execute($data);
@@ -117,15 +139,56 @@
 	 */
 	function sql_delete($query, $data)
 	{
-			$update = connection()->prepare($query);
-			$update->execute($data);
+			$delete = connection()->prepare($query);
+			$delete->execute($data);
 	}
 	
-	/*	Returns current order_id from given customer
-	 *	$customer represents the customer_id of the given customer
+	/*	Returns the shipping and handling cost by the weight of a given order
+	 *	$weight represents total weight of the order
 	 */
-	function get_order_id($customer)
+	function get_shipping_cost_by_weight($weight)
 	{
-		return sql_select("SELECT order_id FROM orders WHERE customer_id=? AND order_status='Selected'", [$customer])[0][0];
+		$price = sql_select("SELECT price FROM shipping_cost WHERE ? > min_weight AND ? < max_weight", [$weight, $weight]);
+		
+		if ($price)
+			return $price[0][0];
+		else
+			return 1.00;
+	}
+	
+	/*	Returns the total price of a given order
+	 *	$order_id represents the order_id of a given order
+	 */
+	function total_price($order_id)
+	{
+		//Initialize total price
+		$total_price = 0.00;
+		
+		//Get a list of parts in the cart 
+		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$order_id]);
+		
+		//Search the legacy database for the matchining part
+		foreach($order_parts as $order_part)
+			$total_price += legacy_sql_query("SELECT price FROM parts WHERE number=?", [$order_part["part_num"]])[0][0] * $order_part["quantity"];
+				
+		return $total_price;
+	}
+	
+	/*	Returns the total weight of a given order
+	 *	$order_id represents the order_id of a given order
+	 */
+	function total_weight($order_id)
+	{
+		//Initialize total weight
+		$total_weight = 0.00;
+		
+		//Get a list of parts in the cart 
+		$order_parts = sql_select("SELECT * FROM order_parts WHERE order_id=?", [$order_id]);
+		
+		//Search the legacy database for the matchining part
+		foreach($order_parts as $order_part)
+			$total_weight += legacy_sql_query("SELECT weight FROM parts WHERE number=?", [$order_part["part_num"]])[0][0] * $order_part["quantity"];
+				
+		return $total_weight;
 	}
 ?>

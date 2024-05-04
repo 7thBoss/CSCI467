@@ -1,6 +1,70 @@
 <!DOCTYPE html>
-<html><head><title>Shipping Charges</title></head>
-<body style="background-color:powderblue;">
+<html>
+   <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shipping Charges</title>
+    <style>
+        /* General page styles */
+        body {
+            font-family: Arial, sans-serif; /* Sets a clean, modern font for the whole page */
+            background-color: #f4f4f9; /* Light grey background for better contrast */
+            color: #333; /* Dark grey text for readability */
+            padding: 20px; /* Adds some padding around the content */
+        }
+
+        h2 {
+            color: #444;
+            margin-bottom: 20px; /* Space below the heading */
+        }
+
+        /* Table styles */
+        table {
+            width: 100%; /* Full width tables */
+            border-collapse: collapse; /* Ensures borders between cells are merged */
+            margin-bottom: 20px; /* Space below the table */
+        }
+
+        th, td {
+            border: 1px solid #ccc; /* Light grey border for table cells */
+            text-align: left; /* Aligns text to the left */
+            padding: 8px; /* Padding inside cells */
+            font-size: 16px; /* Slightly larger font size for readability */
+        }
+
+        th {
+            background-color: #e9e9f0; /* Light purple background for headers */
+            color: #333; /* Dark text for contrast */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f8fa; /* Zebra striping for rows */
+        }
+
+        /* Button and input styles */
+        input[type="text"], select {
+            padding: 8px;
+            margin-top: 5px;
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px; /* Rounded corners for inputs and selects */
+            box-sizing: border-box; /* Includes padding and border in the element's total width and height */
+        }
+
+        input[type="submit"] {
+            background-color: #4CAF50; /* Green background for submit button */
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049; /* Darker green on hover */
+        }
+    </style>
+</head>
 
 <?php
 include 'functions.php';
@@ -239,7 +303,7 @@ try {
         }
         echo "</table>";
         echo "<input class=\"miniButton\" type=submit name=changeFees value=Submit required /> ";
-//        echo "</form>";	page is dependent on this not being here
+        echo "</form>";
     }
 
     // form to add a row to shipping cost table
@@ -251,6 +315,9 @@ try {
     echo "<input class=\"miniButton\" type=submit name=newWeights id=newWeights value=\"Create entry\"/>";
     echo "</form>";
     echo "<br></br>";
+
+    //go back to orders
+    echo "<a href=\"AdminConsoleInterface.php\">Go back to viewing orders</a><br/>";
 }
 
 catch(PDOexception $e) { 
