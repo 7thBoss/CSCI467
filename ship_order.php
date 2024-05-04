@@ -237,7 +237,7 @@ send_email("$email", "Order $order_id: Confirmation", "All items in your order i
 //***************************************************
 // Order shipped. Update status.
 //***************************************************
-echo "<form action='$url/PackingList.php' method='POST'>";
+echo "<form action='$url/ship_order.php' method='POST'>";
 
 echo "<h4>Mark order as shipped. Confirmation will be sent to customer.</h4>";
 // Note: Would be cool if this button connected to a printer and printed the label.
