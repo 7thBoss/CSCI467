@@ -56,14 +56,34 @@
 			{
 				padding-left:40px;
 			}
+			a
+			{
+				padding-left: 25px;
+			}
 		</style>
 		<header>
+			<?php
+			//Printing link buttons to navigate between pages
+			include 'functions.php';
+
+			echo '<a href="';
+			echo $url;
+			echo '/UpdateInventory.php"><input type="button" value="Reciving"/></a>';
+
+			echo '<a href="';
+			echo $url;
+			echo '/PackingList.php"><input type="button" value="Packing"/></a>';
+
+			echo '<a href="';
+			echo $url;
+			echo '/invoice_ship.php"><input type="button" value="Shipping"/></a>';
+
+			?>
 			<h1>Packing List</h1>
 		</header>
     </head>
 	<?php
 
-		include 'functions.php';
 
 
 
@@ -314,7 +334,7 @@
 			echo '<input type="submit" value="Order Packed">'; 
 
 			echo '</form>';
-	
 		}
+
 	?>
 </html>

@@ -33,15 +33,36 @@
 			{
 				text-align: center;
 			}
+			a
+			{
+				padding-left: 25px;
+			}
 		</style>
 		<header>
+			<?php
+				include 'functions.php';
+
+				//Printing link buttons to navigate between pages
+
+				echo '<a href="';
+				echo $url;
+				echo '/UpdateInventory.php"><input type="button" value="Reciving"/></a>';
+
+				echo '<a href="';
+				echo $url;
+				echo '/PackingList.php"><input type="button" value="Packing"/></a>';
+
+				echo '<a href="';
+				echo $url;
+				echo '/invoice_ship.php"><input type="button" value="Shipping"/></a>';
+
+			?>
 			<h1>Update Inventory</h1>
 		</header>
     </head>
 
 <?php
 
-include 'functions.php';
 
 
 //Here is form to input part number or description and amount to be added to inventory
