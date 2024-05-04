@@ -17,7 +17,7 @@ while (gettype($parts[$part_ctr]['number']) != gettype($empty))
   
     {
         echo ' part not found : Inserting Part</br>';
-        sql_insert('INSERT INTO warehouse_parts (part_num, quantity, onhand) VALUES (?, ?, ?)',[$parts[$part_ctr]['number'],$value,$value]);
+        sql_insert('INSERT INTO warehouse_parts (part_num, quantity) VALUES (?, ?)',[$parts[$part_ctr]['number'],$value]);
     }  
     else
     {
