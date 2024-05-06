@@ -1,5 +1,10 @@
 <?php
 
+// Page just inserts all parts in parts table from legacydb into database to keep track of invenotry, each part is inserted with 0 
+// initial quantity to allow for revecing to update quantity when receving new stock.
+//
+//  Only run once when setting up new database, and not run again.
+
 include 'functions.php';
 
 $parts = legacy_sql_query('SELECT number FROM parts', []);
